@@ -1,0 +1,131 @@
+.board-layout {
+  display: flex;
+  gap: 40px;
+  padding: 40px;
+  justify-content: center;
+}
+
+/* Left Form Panel */
+.form-panel {
+  width: 240px;
+  background-color: #b4b9e6;
+  border-radius: 8px;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  background-color: #4a4a4a;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.panel-body {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Inputs */
+.panel-body input,
+.panel-body textarea,
+.panel-body select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  background: #e9ecff;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.panel-body input,
+.panel-body select {
+  height: 40px;
+}
+
+
+.panel-body textarea {
+  height: 90px;
+  resize: none;
+}
+
+.panel-body input:focus,
+.panel-body textarea:focus,
+.panel-body select:focus {
+  background: white;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.15);
+}
+
+
+/* Button */
+.panel-body button {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #4a4a4a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.panel-body button:hover {
+  background-color: #333;
+}
+
+
+.column:hover,
+.form-panel:hover {
+  transform: translateY(-3px);
+  transition: 0.2s ease;
+}
+
+
+/* Board Columns */
+.board {
+  display: flex;
+  gap: 30px;
+}
+
+.column {
+  width: 240px;
+  background-color: #b4b9e6;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  min-height: 500px;
+}
+
+.column h2 {
+  background-color: #4a4a4a;
+  border-radius: 8px;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  color: white;
+  padding: 10px;
+  margin: -15px -15px 15px -15px;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* Task Card */
+.task {
+  background: white;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.low { color: green; }
+.medium { color: orange; }
+.high { color: red; }
