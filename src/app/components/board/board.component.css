@@ -1,13 +1,4 @@
-/* ===================================== */
-/* GLOBAL BACKGROUND (optional but nice) */
-/* ===================================== */
 
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  min-height: 100vh;
-}
 
 
 /* ===================================== */
@@ -81,19 +72,20 @@ body {
 }
 
 
-/* ===================================== */
+/* ============================= */
 /* BOARD LAYOUT */
-/* ===================================== */
-
+/* ============================= */
 .board-layout {
   display: flex;
-  justify-content: center;
-  padding: 0 40px 60px 40px;
+  flex-wrap: wrap;              /* allow wrapping */
+  justify-content: center;      /* center columns */
+  align-items: flex-start;
+
+  gap: 50px;                    /* spacing between columns */
+  padding: 60px 40px;
 }
 
-app-column {
-  margin: 0 18px;
-}
+
 
 
 /* ===================================== */

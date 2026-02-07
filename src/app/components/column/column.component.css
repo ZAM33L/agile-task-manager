@@ -1,5 +1,13 @@
+:host {
+  display: block;
+  flex: 0 0 260px;   /* fixed width */
+  max-width: 260px;  /* prevent stretching */
+}
+
+
+/* Column container */
 .column {
-  width: 260px;
+  width: 100%;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(12px);
   border-radius: 16px;
@@ -22,4 +30,3 @@
   font-size: 14px;
   letter-spacing: 1px;
 }
-
