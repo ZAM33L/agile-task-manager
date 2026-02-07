@@ -1,13 +1,12 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { BoardComponent } from "./board/board.component";
+import { Component } from '@angular/core';
+import { BoardComponent } from './components/board/board.component';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [BoardComponent],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  template: `<app-board></app-board>`,
+  styleUrls: ['./app.css']
 })
-export class App {
-  protected readonly title = signal('agile-task-manager');
-}
+export class App {}
+

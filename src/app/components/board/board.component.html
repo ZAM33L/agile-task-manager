@@ -1,0 +1,98 @@
+<header class="app-header">
+  <h1>Agile Task Manager</h1>
+</header>
+
+<div class="action-bar">
+  <button class="primary-btn" (click)="openAddModal()">
+    Add Task
+  </button>
+
+  <button class="danger-btn" (click)="openDeleteConfirm()">
+    Delete All Tasks
+  </button>
+</div>
+
+<div class="board-layout">
+
+  <app-column
+    title="To Do"
+    [tasks]="todoTasks"
+    (edit)="openEditModal($event)"
+    (delete)="deleteTask($event)">
+  </app-column>
+
+  <app-column title="In Progress" [tasks]="[]"></app-column>
+  <app-column title="Completed" [tasks]="[]"></app-column>
+  <app-column title="Delivered" [tasks]="[]"></app-column>
+
+</div>
+
+
+<!-- ADD MODAL -->
+@if (showAddModal) {
+<div class="modal-backdrop">
+  <div class="modal">
+    <h3>New Task</h3>
+
+    <input type="text" placeholder="Title" [(ngModel)]="newTask.title">
+    <textarea placeholder="Description" [(ngModel)]="newTask.description"></textarea>
+
+    <select [(ngModel)]="newTask.priority">
+      <option>High</option>
+      <option>Medium</option>
+      <option>Low</option>
+    </select>
+
+    <div class="modal-actions">
+      <button (click)="addTask()">Add</button>
+      <button (click)="closeAddModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+}
+
+
+<!-- EDIT MODAL -->
+@if (showEditModal && editingTask) {
+<div class="modal-backdrop">
+  <div class="modal">
+    <h3>Edit Task</h3>
+
+    <input type="text" [(ngModel)]="editingTask.title">
+    <textarea [(ngModel)]="editingTask.description"></textarea>
+
+    <select [(ngModel)]="editingTask.priority">
+      <option>High</option>
+      <option>Medium</option>
+      <option>Low</option>
+    </select>
+
+    <div class="modal-actions">
+      <button (click)="updateTask()">Update</button>
+      <button (click)="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+}
+
+
+<!-- DELETE CONFIRM -->
+@if (showDeleteConfirm) {
+<div class="modal-overlay">
+  <div class="modal-box">
+    <h3>Confirm Deletion</h3>
+    <p>Are you sure you want to delete all tasks?</p>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="closeDeleteConfirm()">
+        Cancel
+      </button>
+
+      <button class="danger-btn" (click)="confirmDelete()">
+        Yes, Delete
+      </button>
+    </div>
+  </div>
+</div>
+}
+

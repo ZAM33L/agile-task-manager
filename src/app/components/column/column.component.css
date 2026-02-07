@@ -1,0 +1,25 @@
+.column {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 18px;
+  min-height: 520px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  transition: 0.3s ease;
+}
+
+.column:hover {
+  transform: translateY(-6px);
+}
+
+.column h2 {
+  background: rgba(0,0,0,0.6);
+  border-radius: 12px;
+  color: white;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+

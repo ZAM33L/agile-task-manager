@@ -1,0 +1,11 @@
+<div class="column">
+  <h2>{{ title }}</h2>
+
+  @for (task of tasks; track task.id) {
+    <app-task
+      [task]="task"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)">
+    </app-task>
+  }
+</div>

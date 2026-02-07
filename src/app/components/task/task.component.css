@@ -1,0 +1,96 @@
+.task {
+  position: relative;
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  margin-bottom: 18px;
+  transition: all 0.2s ease;
+}
+
+.task:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+/* Header Layout */
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Button Container */
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Base Button Style */
+.action-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* Edit Button */
+.edit-btn {
+  background: rgba(102,126,234,0.12);
+  color: #667eea;
+}
+
+.edit-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(102,126,234,0.4);
+}
+
+/* Delete Button */
+.delete-btn {
+  background: rgba(231,76,60,0.12);
+  color: #e74c3c;
+}
+
+.delete-btn:hover {
+  background: #e74c3c;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(231,76,60,0.4);
+}
+
+/* Priority Badge Base */
+.task span {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* LOW */
+.low {
+  background: rgba(46, 204, 113, 0.15);
+  color: #27ae60;
+}
+
+/* MEDIUM */
+.medium {
+  background: rgba(241, 196, 15, 0.15);
+  color: #d68910;
+}
+
+/* HIGH */
+.high {
+  background: rgba(231, 76, 60, 0.15);
+  color: #c0392b;
+}
