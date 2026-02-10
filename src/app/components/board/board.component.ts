@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task } from '../../models/task.model';
+import { Column } from '../../models/column.model';
 import { ColumnComponent } from '../column/column.component';
 
 @Component({
@@ -13,11 +14,23 @@ import { ColumnComponent } from '../column/column.component';
 })
 export class BoardComponent {
 
-  todoTasks: Task[] = [];
+  // =============================
+  // DYNAMIC COLUMNS
+  // =============================
 
-  // --------------------
+  columns: Column[] = [
+    { id: 'todo', title: 'To Do', color: 'red', tasks: [] },
+    { id: 'progress', title: 'In Progress', color: 'yellow', tasks: [] },
+    { id: 'completed', title: 'Completed', color: 'green', tasks: [] },
+    { id: 'delivered', title: 'Delivered', color: 'blue', tasks: [] }
+  ];
+
+  currentColumnId: string = '';
+
+  // =============================
   // ADD MODAL
-  // --------------------
+  // =============================
+
   showAddModal = false;
 
   newTask: Task = {
@@ -27,7 +40,8 @@ export class BoardComponent {
     priority: 'Medium'
   };
 
-  openAddModal() {
+  openAddModal(columnId: string) {
+    this.currentColumnId = columnId;
     this.showAddModal = true;
   }
 
@@ -36,7 +50,10 @@ export class BoardComponent {
   }
 
   addTask() {
-    this.todoTasks.push({
+    const column = this.columns.find(c => c.id === this.currentColumnId);
+    if (!column) return;
+
+    column.tasks.push({
       ...this.newTask,
       id: Date.now()
     });
@@ -51,9 +68,10 @@ export class BoardComponent {
     this.closeAddModal();
   }
 
-  // --------------------
-  // EDIT MODAL
-  // --------------------
+  // =============================
+  // EDIT TASK
+  // =============================
+
   showEditModal = false;
   editingTask: Task | null = null;
 
@@ -70,30 +88,65 @@ export class BoardComponent {
   updateTask() {
     if (!this.editingTask) return;
 
-    const index = this.todoTasks.findIndex(
+    const column = this.columns.find(col =>
+      col.tasks.some(t => t.id === this.editingTask!.id)
+    );
+
+    if (!column) return;
+
+    const index = column.tasks.findIndex(
       t => t.id === this.editingTask!.id
     );
 
     if (index !== -1) {
-      this.todoTasks[index] = { ...this.editingTask };
+      column.tasks[index] = { ...this.editingTask };
     }
 
     this.closeEditModal();
   }
 
-  // --------------------
-  // DELETE SINGLE
-  // --------------------
-  deleteTask(id: number) {
-    this.todoTasks = this.todoTasks.filter(t => t.id !== id);
+  // =============================
+  // DELETE SINGLE TASK (COLUMN AWARE)
+  // =============================
+
+  showTaskDeleteConfirm = false;
+  taskToDelete: { columnId: string; taskId: number } | null = null;
+
+  openTaskDeleteConfirm(data: { columnId: string; taskId: number }) {
+    this.taskToDelete = data;
+    this.showTaskDeleteConfirm = true;
   }
 
-  // --------------------
-  // DELETE ALL
-  // --------------------
-  showDeleteConfirm = false;
+  closeTaskDeleteConfirm() {
+    this.showTaskDeleteConfirm = false;
+    this.taskToDelete = null;
+  }
 
-  openDeleteConfirm() {
+  confirmTaskDelete() {
+    if (!this.taskToDelete) return;
+
+    const column = this.columns.find(
+      c => c.id === this.taskToDelete!.columnId
+    );
+
+    if (column) {
+      column.tasks = column.tasks.filter(
+        task => task.id !== this.taskToDelete!.taskId
+      );
+    }
+
+    this.closeTaskDeleteConfirm();
+  }
+
+  // =============================
+  // DELETE ALL IN COLUMN
+  // =============================
+
+  showDeleteConfirm = false;
+  deleteColumnId: string = '';
+
+  openDeleteConfirm(columnId: string) {
+    this.deleteColumnId = columnId;
     this.showDeleteConfirm = true;
   }
 
@@ -102,7 +155,11 @@ export class BoardComponent {
   }
 
   confirmDelete() {
-    this.todoTasks = [];
+    const column = this.columns.find(c => c.id === this.deleteColumnId);
+    if (column) {
+      column.tasks = [];
+    }
+
     this.closeDeleteConfirm();
   }
 }

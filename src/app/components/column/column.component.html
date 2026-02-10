@@ -1,11 +1,28 @@
 <div class="column">
-  <h2>{{ title }}</h2>
+<div class="column-header" [ngClass]="color">
+    <h2 class="column-title">{{ title }}</h2>
+
+    @if (showDeleteAll) {
+      <div class="menu-container">
+        <button class="menu-btn" (click)="toggleMenu()">⋮</button>
+
+        @if (menuOpen) {
+          <div class="dropdown">
+            <button (click)="onDeleteAll()">Delete All Tasks</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
 
   @for (task of tasks; track task.id) {
-    <app-task
-      [task]="task"
-      (edit)="onEdit($event)"
-      (delete)="onDelete($event)">
-    </app-task>
+  <app-task [task]="task" (edit)="onEdit($event)" (delete)="onDelete($event)">
+  </app-task>
+  }
+
+  @if (showAddButton) {
+  <button class="add-task-btn" (click)="onAddTask()">
+    + Add Task
+  </button>
   }
 </div>

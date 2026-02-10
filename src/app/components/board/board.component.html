@@ -1,29 +1,23 @@
 <header class="app-header">
-  <h1>Agile Task Manager</h1>
+  <h1>My Kanban</h1>
 </header>
-
-<div class="action-bar">
-  <button class="primary-btn" (click)="openAddModal()">
-    Add Task
-  </button>
-
-  <button class="danger-btn" (click)="openDeleteConfirm()">
-    Delete All Tasks
-  </button>
-</div>
 
 <div class="board-layout">
 
-  <app-column
-    title="To Do"
-    [tasks]="todoTasks"
-    (edit)="openEditModal($event)"
-    (delete)="deleteTask($event)">
-  </app-column>
-
-  <app-column title="In Progress" [tasks]="[]"></app-column>
-  <app-column title="Completed" [tasks]="[]"></app-column>
-  <app-column title="Delivered" [tasks]="[]"></app-column>
+  @for (column of columns; track column.id) {
+    <app-column
+      [columnId]="column.id"
+      [title]="column.title"
+      [tasks]="column.tasks"
+      [color]="column.color"
+      [showAddButton]="true"
+      [showDeleteAll]="true"
+      (addTask)="openAddModal(column.id)"
+      (deleteAll)="openDeleteConfirm(column.id)"
+      (edit)="openEditModal($event)"
+      (delete)="openTaskDeleteConfirm($event)">
+    </app-column>
+  }
 
 </div>
 
@@ -89,6 +83,26 @@
       </button>
 
       <button class="danger-btn" (click)="confirmDelete()">
+        Yes, Delete
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- DELETE SINGLE TASK CONFIRM -->
+@if (showTaskDeleteConfirm) {
+<div class="modal-overlay">
+  <div class="modal-box">
+    <h3>Delete Task</h3>
+    <p>Are you sure you want to delete this task?</p>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="closeTaskDeleteConfirm()">
+        Cancel
+      </button>
+
+      <button class="danger-btn" (click)="confirmTaskDelete()">
         Yes, Delete
       </button>
     </div>
