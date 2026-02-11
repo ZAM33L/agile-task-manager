@@ -124,4 +124,27 @@
   background: #f5f5f5;
 }
 
+.task-list {
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Drag preview */
+.cdk-drag-preview {
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+  border-radius: 12px;
+}
+
+/* Placeholder space */
+.cdk-drag-placeholder {
+  opacity: 0.4;
+}
+
+/* Smooth animation */
+.cdk-drag-animating {
+  transition: transform 0.2s ease;
+}
+
 

@@ -162,4 +162,8 @@ export class BoardComponent {
 
     this.closeDeleteConfirm();
   }
+  get connectedColumnIds(): string[] {
+  return this.columns.map(c => c.id);
+}
+
 }

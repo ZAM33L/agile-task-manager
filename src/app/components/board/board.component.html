@@ -2,11 +2,12 @@
   <h1>My Kanban</h1>
 </header>
 
-<div class="board-layout">
+<div class="board-layout" cdkDropListGroup>
 
   @for (column of columns; track column.id) {
     <app-column
       [columnId]="column.id"
+      [connectedTo]="connectedColumnIds"
       [title]="column.title"
       [tasks]="column.tasks"
       [color]="column.color"
