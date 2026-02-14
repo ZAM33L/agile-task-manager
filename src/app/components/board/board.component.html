@@ -1,23 +1,21 @@
 <header class="app-header">
-  <h1>My Kanban</h1>
+  <div class="header-icon">
+    <span class="block red"></span>
+    <span class="block yellow"></span>
+    <span class="block green"></span>
+    <span class="block blue"></span>
+  </div>
+  <h1>OrgTrix</h1>
 </header>
 
 <div class="board-layout" cdkDropListGroup>
 
   @for (column of columns; track column.id) {
-    <app-column
-      [columnId]="column.id"
-      [connectedTo]="connectedColumnIds"
-      [title]="column.title"
-      [tasks]="column.tasks"
-      [color]="column.color"
-      [showAddButton]="true"
-      [showDeleteAll]="true"
-      (addTask)="openAddModal(column.id)"
-      (deleteAll)="openDeleteConfirm(column.id)"
-      (edit)="openEditModal($event)"
-      (delete)="openTaskDeleteConfirm($event)">
-    </app-column>
+  <app-column [columnId]="column.id" [connectedTo]="connectedColumnIds" [title]="column.title" [tasks]="column.tasks"
+    [color]="column.color" [showAddButton]="true" [showDeleteAll]="true" (addTask)="openAddModal(column.id)"
+    (deleteAll)="openDeleteConfirm(column.id)" (edit)="openEditModal($event)" (delete)="openTaskDeleteConfirm($event)"
+    [isMenuOpen]="activeMenuColumnId === column.id" (menuToggle)="toggleMenu(column.id)">
+  </app-column>
   }
 
 </div>
@@ -110,4 +108,3 @@
   </div>
 </div>
 }
-

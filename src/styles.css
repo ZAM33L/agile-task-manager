@@ -1,6 +1,15 @@
+html,
 body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
     font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: <weight>;
-    font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
 }

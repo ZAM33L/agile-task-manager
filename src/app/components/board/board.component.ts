@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Task } from '../../models/task.model';
 import { Column } from '../../models/column.model';
 import { ColumnComponent } from '../column/column.component';
+import { HostListener } from '@angular/core';
+
 
 @Component({
   selector: 'app-board',
@@ -163,7 +165,19 @@ export class BoardComponent {
     this.closeDeleteConfirm();
   }
   get connectedColumnIds(): string[] {
-  return this.columns.map(c => c.id);
+    return this.columns.map(c => c.id);
+  }
+
+  activeMenuColumnId: string | null = null;
+
+  toggleMenu(columnId: string) {
+    this.activeMenuColumnId =
+      this.activeMenuColumnId === columnId ? null : columnId;
+  }
+
+  @HostListener('document:click')
+closeMenus() {
+  this.activeMenuColumnId = null;
 }
 
 }

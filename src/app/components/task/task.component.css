@@ -3,14 +3,14 @@
   background: white;
   padding: 18px;
   border-radius: 14px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  
   margin-bottom: 18px;
   transition: all 0.2s ease;
+  cursor: grab;
 }
 
 .task:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  transform: scale(1.02);
 }
 
 /* Header Layout */
@@ -70,7 +70,7 @@
 .task span {
   display: inline-block;
   margin-top: 12px;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
@@ -79,18 +79,19 @@
 
 /* LOW */
 .low {
-  background: rgba(46, 204, 113, 0.15);
-  color: #27ae60;
+  background: #e0f7e9;
+  color: #1b7a3c;
 }
 
 /* MEDIUM */
 .medium {
-  background: rgba(241, 196, 15, 0.15);
-  color: #d68910;
+  background: #fff4d6;
+  color: #b26a00;
+
 }
 
 /* HIGH */
 .high {
-  background: rgba(231, 76, 60, 0.15);
-  color: #c0392b;
+ background: #ffe3e3;
+  color: #b00020;
 }

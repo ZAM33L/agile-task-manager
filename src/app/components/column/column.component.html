@@ -2,36 +2,56 @@
   <div class="column-header" [ngClass]="color">
     <h2 class="column-title">{{ title }}</h2>
 
-    @if (showDeleteAll) {
-    <div class="menu-container">
-      <button class="menu-btn" (click)="toggleMenu()">⋮</button>
+    @if (showDeleteAll || columnId !== 'todo') {
+      <div class="menu-container">
+        <button class="menu-btn" (click)="toggleMenu($event)">⋮</button>
 
-      @if (menuOpen) {
-      <div class="dropdown">
-        <button (click)="onDeleteAll()">Delete All Tasks</button>
+
+        @if (isMenuOpen) {
+          <div class="dropdown">
+
+            @if (columnId !== 'todo') {
+              <button (click)="onAddTask(); toggleMenu($event)">
+                Add Task
+              </button>
+            }
+
+            @if (showDeleteAll) {
+              <button (click)="onDeleteAll(); toggleMenu($event)">
+                Delete All Tasks
+              </button>
+            }
+
+          </div>
+        }
       </div>
-      }
-    </div>
     }
   </div>
 
-  <div cdkDropList [id]="columnId" [cdkDropListData]="tasks" [cdkDropListConnectedTo]="connectedTo" class="task-list"
-    (cdkDropListDropped)="drop($event)">
-
-
+  <!-- TASK LIST -->
+  <div
+    cdkDropList
+    [id]="columnId"
+    [cdkDropListData]="tasks"
+    [cdkDropListConnectedTo]="connectedTo"
+    class="task-list"
+    (cdkDropListDropped)="drop($event)"
+  >
     @for (task of tasks; track task.id) {
-    <div cdkDrag>
-      <app-task [task]="task" (edit)="onEdit($event)" (delete)="onDelete($event)">
-      </app-task>
-    </div>
+      <div cdkDrag>
+        <app-task
+          [task]="task"
+          (edit)="onEdit($event)"
+          (delete)="onDelete($event)"
+        >
+        </app-task>
+      </div>
     }
-
   </div>
 
-
-  @if (showAddButton) {
-  <button class="add-task-btn" (click)="onAddTask()">
-    + Add Task
-  </button>
+  @if (showAddButton && columnId === 'todo') {
+    <button class="add-task-btn" (click)="onAddTask()">
+      + Add Task
+    </button>
   }
 </div>

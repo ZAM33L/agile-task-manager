@@ -10,7 +10,6 @@ import {
 } from '@angular/cdk/drag-drop';
 
 
-
 @Component({
   selector: 'app-column',
   standalone: true,
@@ -27,20 +26,36 @@ export class ColumnComponent {
   @Input() showAddButton = false;
   @Input() showDeleteAll = false;
 
+  @Input() columnId!: string;
+  @Input() connectedTo: string[] = [];
+
+  /* 🔥 Controlled by Parent */
+  @Input() isMenuOpen = false;
+  @Output() menuToggle = new EventEmitter<string>();
+
   @Output() edit = new EventEmitter<Task>();
   @Output() delete = new EventEmitter<{ taskId: number; columnId: string }>();
-
   @Output() addTask = new EventEmitter<void>();
   @Output() deleteAll = new EventEmitter<void>();
   @Output() taskMoved = new EventEmitter<void>();
 
+  /* ========================= */
+  /* MENU */
+  /* ========================= */
+
+  toggleMenu(event: MouseEvent) {
+  event.stopPropagation();
+  this.menuToggle.emit();
+}
+
+
+  /* ========================= */
+  /* TASK ACTIONS */
+  /* ========================= */
+
   onEdit(task: Task) {
     this.edit.emit(task);
   }
-
-  @Input() columnId!: string;   // <-- add this input
-  @Input() connectedTo:string[] = []
-
 
   onDelete(taskId: number) {
     this.delete.emit({
@@ -49,32 +64,26 @@ export class ColumnComponent {
     });
   }
 
-
-
   onAddTask() {
     this.addTask.emit();
   }
 
-  menuOpen = false;
-
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
-  }
-
   onDeleteAll() {
-    this.deleteAll.emit()
-    this.menuOpen = false;
+    this.deleteAll.emit();
   }
 
-  drop(event: CdkDragDrop<Task[]>){
-    if(event.previousContainer === event.container){
+  /* ========================= */
+  /* DRAG DROP */
+  /* ========================= */
+
+  drop(event: CdkDragDrop<Task[]>) {
+    if (event.previousContainer === event.container) {
       moveItemInArray(
         event.container.data,
         event.previousIndex,
         event.currentIndex
       );
-    }
-    else{
+    } else {
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
@@ -82,6 +91,7 @@ export class ColumnComponent {
         event.currentIndex
       );
     }
-    this.taskMoved.emit()
+
+    this.taskMoved.emit();
   }
 }
