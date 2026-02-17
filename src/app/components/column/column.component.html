@@ -3,55 +3,66 @@
     <h2 class="column-title">{{ title }}</h2>
 
     @if (showDeleteAll || columnId !== 'todo') {
-      <div class="menu-container">
-        <button class="menu-btn" (click)="toggleMenu($event)">⋮</button>
+    <div class="menu-container">
+      <button class="menu-btn" (click)="toggleMenu($event)">⋮</button>
 
 
-        @if (isMenuOpen) {
-          <div class="dropdown">
+      @if (isMenuOpen) {
+      <div class="dropdown">
 
-            @if (columnId !== 'todo') {
-              <button (click)="onAddTask(); toggleMenu($event)">
-                Add Task
-              </button>
-            }
+        <button (click)="onSort('priority'); toggleMenu($event)">
+          Sort by Priority
+          @if (sortField === 'priority') {
+          <span>
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+          }
+        </button>
 
-            @if (showDeleteAll) {
-              <button (click)="onDeleteAll(); toggleMenu($event)">
-                Delete All Tasks
-              </button>
-            }
 
-          </div>
+        <button (click)="onSort('dueDate'); toggleMenu($event)">
+          Sort by Due Date
+          @if (sortField === 'dueDate') {
+          <span>
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+          }
+        </button>
+
+
+
+        @if (columnId !== 'todo') {
+        <button (click)="onAddTask(); toggleMenu($event)">
+          Add Task
+        </button>
         }
+
+        @if (showDeleteAll) {
+        <button (click)="onDeleteAll(); toggleMenu($event)">
+          Delete All Tasks
+        </button>
+        }
+
       </div>
+      }
+    </div>
     }
   </div>
 
   <!-- TASK LIST -->
-  <div
-    cdkDropList
-    [id]="columnId"
-    [cdkDropListData]="tasks"
-    [cdkDropListConnectedTo]="connectedTo"
-    class="task-list"
-    (cdkDropListDropped)="drop($event)"
-  >
+  <div cdkDropList [id]="columnId" [cdkDropListData]="tasks" [cdkDropListConnectedTo]="connectedTo" class="task-list"
+    (cdkDropListDropped)="drop($event)">
     @for (task of tasks; track task.id) {
-      <div cdkDrag>
-        <app-task
-          [task]="task"
-          (edit)="onEdit($event)"
-          (delete)="onDelete($event)"
-        >
-        </app-task>
-      </div>
+    <div cdkDrag>
+      <app-task [task]="task" (edit)="onEdit($event)" (delete)="onDelete($event)">
+      </app-task>
+    </div>
     }
   </div>
 
   @if (showAddButton && columnId === 'todo') {
-    <button class="add-task-btn" (click)="onAddTask()">
-      + Add Task
-    </button>
+  <button class="add-task-btn" (click)="onAddTask()">
+    + Add Task
+  </button>
   }
 </div>

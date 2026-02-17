@@ -8,6 +8,7 @@ import {
   moveItemInArray,
   transferArrayItem
 } from '@angular/cdk/drag-drop';
+import { Column } from '../../models/column.model';
 
 
 @Component({
@@ -29,8 +30,11 @@ export class ColumnComponent {
   @Input() columnId!: string;
   @Input() connectedTo: string[] = [];
 
-  /* 🔥 Controlled by Parent */
+
   @Input() isMenuOpen = false;
+  @Input() sortField?: 'priority' | 'dueDate';
+  @Input() sortDirection?: 'asc' | 'desc';
+
   @Output() menuToggle = new EventEmitter<string>();
 
   @Output() edit = new EventEmitter<Task>();
@@ -38,15 +42,16 @@ export class ColumnComponent {
   @Output() addTask = new EventEmitter<void>();
   @Output() deleteAll = new EventEmitter<void>();
   @Output() taskMoved = new EventEmitter<void>();
+  @Output() sort = new EventEmitter<'priority'|'dueDate'>();
 
   /* ========================= */
   /* MENU */
   /* ========================= */
 
   toggleMenu(event: MouseEvent) {
-  event.stopPropagation();
-  this.menuToggle.emit();
-}
+    event.stopPropagation();
+    this.menuToggle.emit();
+  }
 
 
   /* ========================= */
@@ -94,4 +99,12 @@ export class ColumnComponent {
 
     this.taskMoved.emit();
   }
+
+  onSort(field:'priority'|'dueDate'){
+    this.sort.emit(field);
+  }
+
+  
+
+  
 }

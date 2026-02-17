@@ -11,10 +11,24 @@
 <div class="board-layout" cdkDropListGroup>
 
   @for (column of columns; track column.id) {
-  <app-column [columnId]="column.id" [connectedTo]="connectedColumnIds" [title]="column.title" [tasks]="column.tasks"
-    [color]="column.color" [showAddButton]="true" [showDeleteAll]="true" (addTask)="openAddModal(column.id)"
-    (deleteAll)="openDeleteConfirm(column.id)" (edit)="openEditModal($event)" (delete)="openTaskDeleteConfirm($event)"
-    [isMenuOpen]="activeMenuColumnId === column.id" (menuToggle)="toggleMenu(column.id)">
+  <app-column 
+    [columnId]="column.id" 
+    [connectedTo]="connectedColumnIds" 
+    [title]="column.title" 
+    [tasks]="column.tasks"
+    [color]="column.color" 
+    [showAddButton]="true" 
+    [showDeleteAll]="true" 
+    (addTask)="openAddModal(column.id)"
+    (deleteAll)="openDeleteConfirm(column.id)" 
+    (edit)="openEditModal($event)" 
+    (delete)="openTaskDeleteConfirm($event)"
+    [isMenuOpen]="activeMenuColumnId === column.id" 
+    (menuToggle)="toggleMenu(column.id)" 
+    (sort)="sortColumn(column, $event)"
+    [sortField]="column.sortField ?? undefined" 
+    [sortDirection]="column.sortDirection ?? undefined"
+    >
   </app-column>
   }
 
@@ -30,11 +44,68 @@
     <input type="text" placeholder="Title" [(ngModel)]="newTask.title">
     <textarea placeholder="Description" [(ngModel)]="newTask.description"></textarea>
 
-    <select [(ngModel)]="newTask.priority">
-      <option>High</option>
-      <option>Medium</option>
-      <option>Low</option>
-    </select>
+    <div class="cdk-select" cdkOverlayOrigin #addTrigger="cdkOverlayOrigin" (click)="toggleAddDropdown()">
+
+      {{ newTask.priority || 'Select Priority' }}
+    </div>
+
+    <ng-template cdk-connected-overlay [cdkConnectedOverlayOrigin]="addTrigger"
+      [cdkConnectedOverlayOpen]="isAddDropdownOpen" [cdkConnectedOverlayHasBackdrop]="true"
+      (backdropClick)="closeAddDropdown()">
+
+      <div class="dropdown-panel">
+        <div class="option" (click)="selectAddPriority('High')">High</div>
+        <div class="option" (click)="selectAddPriority('Medium')">Medium</div>
+        <div class="option" (click)="selectAddPriority('Low')">Low</div>
+      </div>
+    </ng-template>
+
+    <div class="cdk-select" cdkOverlayOrigin #addDateTrigger="cdkOverlayOrigin" (click)="toggleAddDate()">
+
+      {{ newTask.dueDate ? (newTask.dueDate | date:'mediumDate') : 'Select Due Date' }}
+    </div>
+
+    <ng-template cdk-connected-overlay [cdkConnectedOverlayOrigin]="addDateTrigger"
+      [cdkConnectedOverlayOpen]="isAddDateOpen" [cdkConnectedOverlayHasBackdrop]="true"
+      [cdkConnectedOverlayPositions]="dateOverlayPositions" (backdropClick)="closeAddDate()">
+
+      <div class="date-panel">
+
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+
+          <div class="year-controls">
+            <button (click)="previousYear()">«</button>
+            <button (click)="previousMonth()">‹</button>
+          </div>
+
+          <span class="month-label">
+            {{ currentMonth | date:'MMMM yyyy' }}
+          </span>
+
+          <div class="year-controls">
+            <button (click)="nextMonth()">›</button>
+            <button (click)="nextYear()">»</button>
+          </div>
+
+        </div>
+
+        <!-- Days Grid -->
+        <div class="date-cell" *ngFor="let day of getDaysInMonth()" [class.selected]="
+         newTask.dueDate &&
+         newTask.dueDate.getDate() === day.getDate() &&
+         newTask.dueDate.getMonth() === day.getMonth() &&
+         newTask.dueDate.getFullYear() === day.getFullYear()
+       " (click)="selectAddDate(day)">
+
+          {{ day.getDate() }}
+        </div>
+
+      </div>
+
+
+    </ng-template>
+
 
     <div class="modal-actions">
       <button (click)="addTask()">Add</button>
@@ -54,11 +125,66 @@
     <input type="text" [(ngModel)]="editingTask.title">
     <textarea [(ngModel)]="editingTask.description"></textarea>
 
-    <select [(ngModel)]="editingTask.priority">
-      <option>High</option>
-      <option>Medium</option>
-      <option>Low</option>
-    </select>
+    <div class="cdk-select" cdkOverlayOrigin #editTrigger="cdkOverlayOrigin" (click)="toggleEditDropdown()"> {{
+      editingTask.priority || 'Select Priority' }} </div> <ng-template cdk-connected-overlay
+      [cdkConnectedOverlayOrigin]="editTrigger" [cdkConnectedOverlayOpen]="isEditDropdownOpen"
+      [cdkConnectedOverlayHasBackdrop]="true" (backdropClick)="closeEditDropdown()">
+      <div class="dropdown-panel">
+        <div class="option" (click)="selectEditPriority('High')">High</div>
+        <div class="option" (click)="selectEditPriority('Medium')">Medium</div>
+        <div class="option" (click)="selectEditPriority('Low')">Low</div>
+      </div>
+    </ng-template>
+
+    <div class="cdk-select" cdkOverlayOrigin #editDateTrigger="cdkOverlayOrigin" (click)="toggleEditDate()">
+
+      {{ editingTask.dueDate ? (editingTask.dueDate | date:'mediumDate') : 'Select Due Date' }}
+    </div>
+
+    <ng-template cdk-connected-overlay [cdkConnectedOverlayOrigin]="editDateTrigger"
+      [cdkConnectedOverlayOpen]="isEditDateOpen" [cdkConnectedOverlayHasBackdrop]="true"
+      [cdkConnectedOverlayPositions]="dateOverlayPositions" (backdropClick)="closeEditDate()">
+
+      <div class="date-panel">
+
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+
+          <div class="year-controls">
+            <button (click)="previousYear()">«</button>
+            <button (click)="previousMonth()">‹</button>
+          </div>
+
+          <span class="month-label">
+            {{ currentMonth | date:'MMMM yyyy' }}
+          </span>
+
+          <div class="year-controls">
+            <button (click)="nextMonth()">›</button>
+            <button (click)="nextYear()">»</button>
+          </div>
+
+        </div>
+
+        <!-- Days Grid -->
+        <div class="date-cell" *ngFor="let day of getDaysInMonth()" [class.selected]="
+         editingTask.dueDate &&
+         editingTask.dueDate.getDate() === day.getDate() &&
+         editingTask.dueDate.getMonth() === day.getMonth() &&
+         editingTask.dueDate.getFullYear() === day.getFullYear()
+       " (click)="selectEditDate(day)">
+
+          {{ day.getDate() }}
+        </div>
+
+      </div>
+
+
+
+    </ng-template>
+
+
+
 
     <div class="modal-actions">
       <button (click)="updateTask()">Update</button>

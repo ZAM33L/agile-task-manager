@@ -1,23 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { OverlayModule, ConnectedPosition } from '@angular/cdk/overlay';
+
 import { Task } from '../../models/task.model';
 import { Column } from '../../models/column.model';
 import { ColumnComponent } from '../column/column.component';
-import { HostListener } from '@angular/core';
-
 
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CommonModule, FormsModule, ColumnComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ColumnComponent,
+    OverlayModule
+  ],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent {
 
   // =============================
-  // DYNAMIC COLUMNS
+  // COLUMNS
   // =============================
 
   columns: Column[] = [
@@ -27,7 +32,11 @@ export class BoardComponent {
     { id: 'delivered', title: 'Delivered', color: 'blue', tasks: [] }
   ];
 
-  currentColumnId: string = '';
+  get connectedColumnIds(): string[] {
+    return this.columns.map(c => c.id);
+  }
+
+  currentColumnId = '';
 
   // =============================
   // ADD MODAL
@@ -35,12 +44,7 @@ export class BoardComponent {
 
   showAddModal = false;
 
-  newTask: Task = {
-    id: 0,
-    title: '',
-    description: '',
-    priority: 'Medium'
-  };
+  newTask: Task = this.createEmptyTask();
 
   openAddModal(columnId: string) {
     this.currentColumnId = columnId;
@@ -49,6 +53,7 @@ export class BoardComponent {
 
   closeAddModal() {
     this.showAddModal = false;
+    this.resetNewTask();
   }
 
   addTask() {
@@ -60,18 +65,25 @@ export class BoardComponent {
       id: Date.now()
     });
 
-    this.newTask = {
-      id: 0,
-      title: '',
-      description: '',
-      priority: 'Medium'
-    };
-
     this.closeAddModal();
   }
 
+  private createEmptyTask(): Task {
+    return {
+      id: 0,
+      title: '',
+      description: '',
+      priority: 'Medium',
+      dueDate: null
+    };
+  }
+
+  private resetNewTask() {
+    this.newTask = this.createEmptyTask();
+  }
+
   // =============================
-  // EDIT TASK
+  // EDIT MODAL
   // =============================
 
   showEditModal = false;
@@ -90,25 +102,19 @@ export class BoardComponent {
   updateTask() {
     if (!this.editingTask) return;
 
-    const column = this.columns.find(col =>
-      col.tasks.some(t => t.id === this.editingTask!.id)
-    );
-
-    if (!column) return;
-
-    const index = column.tasks.findIndex(
-      t => t.id === this.editingTask!.id
-    );
-
-    if (index !== -1) {
-      column.tasks[index] = { ...this.editingTask };
+    for (const column of this.columns) {
+      const index = column.tasks.findIndex(t => t.id === this.editingTask!.id);
+      if (index !== -1) {
+        column.tasks[index] = { ...this.editingTask };
+        break;
+      }
     }
 
     this.closeEditModal();
   }
 
   // =============================
-  // DELETE SINGLE TASK (COLUMN AWARE)
+  // DELETE SINGLE TASK
   // =============================
 
   showTaskDeleteConfirm = false;
@@ -127,10 +133,7 @@ export class BoardComponent {
   confirmTaskDelete() {
     if (!this.taskToDelete) return;
 
-    const column = this.columns.find(
-      c => c.id === this.taskToDelete!.columnId
-    );
-
+    const column = this.columns.find(c => c.id === this.taskToDelete!.columnId);
     if (column) {
       column.tasks = column.tasks.filter(
         task => task.id !== this.taskToDelete!.taskId
@@ -145,7 +148,7 @@ export class BoardComponent {
   // =============================
 
   showDeleteConfirm = false;
-  deleteColumnId: string = '';
+  deleteColumnId = '';
 
   openDeleteConfirm(columnId: string) {
     this.deleteColumnId = columnId;
@@ -161,12 +164,12 @@ export class BoardComponent {
     if (column) {
       column.tasks = [];
     }
-
     this.closeDeleteConfirm();
   }
-  get connectedColumnIds(): string[] {
-    return this.columns.map(c => c.id);
-  }
+
+  // =============================
+  // COLUMN MENU
+  // =============================
 
   activeMenuColumnId: string | null = null;
 
@@ -176,8 +179,174 @@ export class BoardComponent {
   }
 
   @HostListener('document:click')
-closeMenus() {
-  this.activeMenuColumnId = null;
-}
+  closeMenus() {
+    this.activeMenuColumnId = null;
+  }
 
+  // =============================
+  // PRIORITY DROPDOWNS
+  // =============================
+
+  isAddDropdownOpen = false;
+  isEditDropdownOpen = false;
+
+  toggleAddDropdown() {
+    this.isAddDropdownOpen = !this.isAddDropdownOpen;
+  }
+
+  closeAddDropdown() {
+    this.isAddDropdownOpen = false;
+  }
+
+  selectAddPriority(value: 'High' | 'Medium' | 'Low') {
+    this.newTask.priority = value;
+    this.closeAddDropdown();
+  }
+
+  toggleEditDropdown() {
+    this.isEditDropdownOpen = !this.isEditDropdownOpen;
+  }
+
+  closeEditDropdown() {
+    this.isEditDropdownOpen = false;
+  }
+
+  selectEditPriority(value: 'High' | 'Medium' | 'Low') {
+    if (this.editingTask) {
+      this.editingTask.priority = value;
+    }
+    this.closeEditDropdown();
+  }
+
+  // =============================
+  // DATE PICKER (CDK)
+  // =============================
+
+  isAddDateOpen = false;
+  isEditDateOpen = false;
+
+  dateOverlayPositions: ConnectedPosition[] = [
+    {
+      originX: 'start',
+      originY: 'bottom',
+      overlayX: 'start',
+      overlayY: 'top'
+    }
+  ];
+
+  currentMonth = new Date();
+
+  toggleAddDate() {
+    this.isAddDateOpen = !this.isAddDateOpen;
+  }
+
+  closeAddDate() {
+    this.isAddDateOpen = false;
+  }
+
+  toggleEditDate() {
+    this.isEditDateOpen = !this.isEditDateOpen;
+  }
+
+  closeEditDate() {
+    this.isEditDateOpen = false;
+  }
+
+  selectAddDate(date: Date) {
+    this.newTask.dueDate = date;
+    this.closeAddDate();
+  }
+
+  selectEditDate(date: Date) {
+    if (this.editingTask) {
+      this.editingTask.dueDate = date;
+    }
+    this.closeEditDate();
+  }
+
+  getDaysInMonth(): Date[] {
+    const year = this.currentMonth.getFullYear();
+    const month = this.currentMonth.getMonth();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+
+    const days: Date[] = [];
+
+    for (let i = 1; i <= lastDay; i++) {
+      days.push(new Date(year, month, i));
+    }
+
+    return days;
+  }
+
+  nextMonth() {
+    this.currentMonth = new Date(
+      this.currentMonth.getFullYear(),
+      this.currentMonth.getMonth() + 1,
+      1
+    );
+  }
+
+  previousMonth() {
+    this.currentMonth = new Date(
+      this.currentMonth.getFullYear(),
+      this.currentMonth.getMonth() - 1,
+      1
+    );
+  }
+
+  nextYear() {
+    this.currentMonth = new Date(
+      this.currentMonth.getFullYear() + 1,
+      this.currentMonth.getMonth(),
+      1
+    );
+  }
+
+  previousYear() {
+    this.currentMonth = new Date(
+      this.currentMonth.getFullYear() - 1,
+      this.currentMonth.getMonth(),
+      1
+    );
+  }
+
+  /* ========================= */
+  /* Sorting */
+  /* ========================= */
+
+  sortColumn(column:Column,field:'priority'|'dueDate'){
+    //clicking same field -> toggle
+    if(column.sortField === field){
+      column.sortDirection = column.sortDirection === 'asc' ? 'desc' : 'asc'; 
+    }
+    else{
+      column.sortField = field;
+      column.sortDirection = 'asc'
+    }
+
+    const direction = column.sortDirection === 'asc' ? 1 : -1; 
+
+    if(field === 'priority'){
+      const priorityOrder = {
+      High: 1,
+      Medium: 2,
+      Low: 3
+    };
+
+    column.tasks.sort((a, b) =>
+      (priorityOrder[a.priority] - priorityOrder[b.priority]) * direction
+    );
+
+    }
+
+     if (field === 'dueDate') {
+    column.tasks.sort((a, b) => {
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1 * direction;
+      if (!b.dueDate) return -1 * direction;
+
+      return (a.dueDate.getTime() - b.dueDate.getTime()) * direction;
+    });
+  }
+  }
 }

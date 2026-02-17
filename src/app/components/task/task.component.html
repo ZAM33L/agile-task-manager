@@ -1,5 +1,5 @@
 <div class="task">
-  
+
   <div class="task-header">
     <h3>{{ task.title }}</h3>
 
@@ -11,8 +11,16 @@
 
   <p>{{ task.description }}</p>
 
+  @if (task.dueDate) {
+  <div class="due-date">
+    📅 {{ task.dueDate | date:'mediumDate' }}
+  </div>
+  }
+
   <span [ngClass]="task.priority.toLowerCase()">
     {{ task.priority }}
   </span>
+
+
 
 </div>

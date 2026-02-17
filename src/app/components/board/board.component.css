@@ -182,6 +182,12 @@ body {
   font-size: 14px;
 }
 
+input[type="date"] {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
 .modal textarea {
   height: 100px;
   resize: none;
@@ -218,3 +224,92 @@ body {
   background: #ff4b2b;
   color: white;
 }
+
+.cdk-select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.dropdown-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  padding: 6px 0;
+  min-width: 180px;
+}
+
+.option {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.option:hover {
+  background: #f2f2f2;
+}
+
+.date-panel {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  min-width: 260px;
+}
+
+.date-cell {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.date-cell:hover {
+  background: #f0f0f0;
+}
+.date-cell.selected {
+  background: #2563eb;
+  color: white;
+}
+
+.calendar-header {
+  grid-column: span 7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.year-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.calendar-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.calendar-header button:hover {
+  background: #f2f2f2;
+}
+
+.month-label {
+  font-size: 14px;
+}
+
