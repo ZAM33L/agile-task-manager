@@ -22,11 +22,9 @@ import { ColumnComponent } from '../column/column.component';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent {
-
   // =============================
   // COLUMNS
   // =============================
-
   columns: Column[] = [
     { id: 'todo', title: 'To Do', color: 'red', tasks: [] },
     { id: 'progress', title: 'In Progress', color: 'yellow', tasks: [] },
