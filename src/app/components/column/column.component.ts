@@ -27,6 +27,7 @@ export class ColumnComponent {
   @Input() showAddButton = false;
   @Input() showDeleteAll = false;
 
+
   @Input() columnId!: string;
   @Input() connectedTo: string[] = [];
 
@@ -43,6 +44,9 @@ export class ColumnComponent {
   @Output() deleteAll = new EventEmitter<void>();
   @Output() taskMoved = new EventEmitter<void>();
   @Output() sort = new EventEmitter<'priority'|'dueDate'>();
+  @Output() resetSort = new EventEmitter<void>();
+
+   @Output() deleteColumn = new EventEmitter<string>();
 
   /* ========================= */
   /* MENU */
@@ -104,7 +108,37 @@ export class ColumnComponent {
     this.sort.emit(field);
   }
 
+  onResetSort(){
+    this.resetSort.emit()
+  }
   
+  onDeleteColumn() {
+    this.deleteColumn.emit(this.columnId);
+    this.toggleMenu(new MouseEvent('click')); // closes menu
+  }
+
+   /* ========================= */
+  /* HEADER COLOR UTILS */
+  /* ========================= */
+  getHeaderGradient(color: string): string {
+    switch(color) {
+      case 'red': return 'linear-gradient(135deg, #e74c3c, #c0392b)';
+      case 'yellow': return 'linear-gradient(135deg, #f1c40f, #d4ac0d)';
+      case 'green': return 'linear-gradient(135deg, #2ecc71, #27ae60)';
+      case 'blue': return 'linear-gradient(135deg, #3498db, #2980b9)';
+      case 'purple': return 'linear-gradient(135deg, #9b59b6, #8e44ad)';
+      case 'orange': return 'linear-gradient(135deg, #e67e22, #d35400)';
+      case 'pink': return 'linear-gradient(135deg, #ff6b81, #ff4757)';
+      case 'teal': return 'linear-gradient(135deg, #1abc9c, #16a085)';
+      case 'gray': return 'linear-gradient(135deg, #95a5a6, #7f8c8d)';
+      default: return 'linear-gradient(135deg, #3498db, #2980b9)'; // default blue
+    }
+  }
+
+  getTextColor(color: string): string {
+    const darkColors = ['red', 'green', 'blue', 'purple', 'teal'];
+    return darkColors.includes(color) ? '#fff' : '#000'; // simple contrast
+  }
 
   
 }

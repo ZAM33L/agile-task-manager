@@ -7,4 +7,5 @@ export interface Column {
   color: string;
   sortField?: 'priority' | 'dueDate' | null;
   sortDirection?: 'asc' | 'desc' | null;
+  originalTasks?: Task[];
 }

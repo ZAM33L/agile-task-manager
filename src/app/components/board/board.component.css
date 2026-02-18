@@ -20,7 +20,7 @@ body {
 /* ===================================== */
 
 .app-header {
-  height: 80px;
+  height: 60px;
   background: rgba(0, 0, 0, 0.85);
   color: white;
   display: flex;
@@ -89,21 +89,36 @@ body {
 /* ===================================== */
 
 .board-layout {
+  margin-top: 40px;
   display: grid;
   gap: 30px;
   padding: 40px;
   width: 100%;
-  min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa, #e4ecf7);
   grid-auto-rows: 1fr;
 }
 
 /* Large Screens → 4 columns */
+/* Large Screens → Horizontal Scroll */
 @media (min-width: 1200px) {
+  body {
+    overflow-y: hidden;   /* 🚫 remove page vertical scroll */
+  }
   .board-layout {
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: flex-start;
+  }
+
+  .column {
+    flex: 0 0 340px; /* fixed width */
   }
 }
+
 
 /* Medium Screens → 2 columns */
 @media (min-width: 768px) and (max-width: 1199px) {
@@ -313,3 +328,89 @@ input[type="date"] {
   font-size: 14px;
 }
 
+.board-toolbar {
+  position: fixed;
+  top: 60px;            /* SAME as header height */
+  left: 0;
+  height: 50px;
+  width: 100%;
+  z-index: 150;
+
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+
+  background: #f9fafb;  /* important so it doesn't look transparent */
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.add-column-btn {
+  background: #f3f4f6;
+  border: 2px dashed #cbd5e1;
+  color: #374151;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.add-column-btn:hover {
+  background: #e5e7eb;
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* Palette container */
+.color-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 40px); /* each swatch 40px wide */
+  gap: 8px;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  max-width: 220px; /* optional to limit width */
+}
+
+/* Each color square */
+.color-swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.1s, border-color 0.15s;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+  border-color: #00000033;
+}
+
+.color-swatch.selected {
+  border-color: #000;
+}
+
+/* Trigger button with current color */
+.color-palette-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.selected-color {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  display: inline-block;
+}

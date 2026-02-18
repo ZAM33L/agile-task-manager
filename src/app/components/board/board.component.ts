@@ -5,6 +5,7 @@ import { OverlayModule, ConnectedPosition } from '@angular/cdk/overlay';
 
 import { Task } from '../../models/task.model';
 import { Column } from '../../models/column.model';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ColumnComponent } from '../column/column.component';
 
 @Component({
@@ -14,7 +15,8 @@ import { ColumnComponent } from '../column/column.component';
     CommonModule,
     FormsModule,
     ColumnComponent,
-    OverlayModule
+    OverlayModule,
+    ScrollingModule
   ],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
@@ -314,39 +316,148 @@ export class BoardComponent {
   /* Sorting */
   /* ========================= */
 
-  sortColumn(column:Column,field:'priority'|'dueDate'){
-    //clicking same field -> toggle
-    if(column.sortField === field){
-      column.sortDirection = column.sortDirection === 'asc' ? 'desc' : 'asc'; 
+  sortColumn(column: Column, field: 'priority' | 'dueDate') {
+    //cloning the original order
+    if (!column.originalTasks) {
+      column.originalTasks = [...column.tasks];
     }
-    else{
+    //clicking same field -> toggle
+    if (column.sortField === field) {
+      column.sortDirection = column.sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+    else {
       column.sortField = field;
       column.sortDirection = 'asc'
     }
 
-    const direction = column.sortDirection === 'asc' ? 1 : -1; 
+    const direction = column.sortDirection === 'asc' ? 1 : -1;
 
-    if(field === 'priority'){
+    if (field === 'priority') {
       const priorityOrder = {
-      High: 1,
-      Medium: 2,
-      Low: 3
-    };
+        High: 1,
+        Medium: 2,
+        Low: 3
+      };
 
-    column.tasks.sort((a, b) =>
-      (priorityOrder[a.priority] - priorityOrder[b.priority]) * direction
-    );
+      column.tasks.sort((a, b) =>
+        (priorityOrder[a.priority] - priorityOrder[b.priority]) * direction
+      );
 
     }
 
-     if (field === 'dueDate') {
-    column.tasks.sort((a, b) => {
-      if (!a.dueDate && !b.dueDate) return 0;
-      if (!a.dueDate) return 1 * direction;
-      if (!b.dueDate) return -1 * direction;
+    if (field === 'dueDate') {
+      column.tasks.sort((a, b) => {
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1 * direction;
+        if (!b.dueDate) return -1 * direction;
 
-      return (a.dueDate.getTime() - b.dueDate.getTime()) * direction;
-    });
+        return (a.dueDate.getTime() - b.dueDate.getTime()) * direction;
+      });
+    }
   }
+
+  resetColumnSort(column: Column) {
+    if (column.originalTasks) {
+      column.tasks = [...column.originalTasks];
+    }
+
+    column.sortField = undefined;
+    column.sortDirection = undefined;
   }
+
+  // =============================
+// ADD COLUMN MODAL
+// =============================
+
+showAddColumnModal = false;
+
+columnTitleInput = '';
+columnColorInput = 'blue';
+columnInsertPosition = 0;
+
+// CDK DROPDOWNS FOR ADD COLUMN
+isColumnColorOpen = false;
+isColumnPositionOpen = false;
+
+
+openAddColumnModal(){
+  this.columnTitleInput='';
+  this.columnColorInput='blue'
+  this.columnInsertPosition = this.columns.length;
+  this.showAddColumnModal = true
+}
+closeAddColumnModal(){
+  this.showAddColumnModal = false;
+}
+
+toggleColumnColor() {
+  this.isColumnColorOpen = !this.isColumnColorOpen;
+}
+
+closeColumnColor() {
+  this.isColumnColorOpen = false;
+}
+
+toggleColumnPosition() {
+  this.isColumnPositionOpen = !this.isColumnPositionOpen;
+}
+
+closeColumnPosition() {
+  this.isColumnPositionOpen = false;
+}
+
+// Available colors for new columns
+availableColors: { name: string; value: string }[] = [
+  { name: 'Red', value: 'red' },
+  { name: 'Yellow', value: 'yellow' },
+  { name: 'Green', value: 'green' },
+  { name: 'Blue', value: 'blue' },
+  { name: 'Purple', value: 'purple' },
+  { name: 'Orange', value: 'orange' },
+  { name: 'Pink', value: 'pink' },
+  { name: 'Teal', value: 'teal' }
+];
+
+
+addColumn(){
+  if(!this.columnTitleInput.trim()) return;
+
+  const newColumn:Column = {
+    id:'col-'+Date.now(),
+    title:this.columnTitleInput.trim(),
+    color:this.columnColorInput,
+    tasks:[]
+  };
+  this.columns.splice(this.columnInsertPosition,0,newColumn);
+
+  this.closeAddColumnModal()
+}
+
+//delete columns
+
+// Column delete modal state
+showColumnDeleteConfirm = false;
+columnToDeleteId: string | null = null;
+
+// Trigger modal
+openDeleteColumnConfirm(columnId: string) {
+  this.columnToDeleteId = columnId;
+  this.showColumnDeleteConfirm = true;
+}
+
+// Close modal
+closeDeleteColumnConfirm() {
+  this.showColumnDeleteConfirm = false;
+  this.columnToDeleteId = null;
+}
+
+// Confirm deletion
+confirmColumnDelete() {
+  if (this.columnToDeleteId) {
+    this.columns = this.columns.filter(col => col.id !== this.columnToDeleteId);
+  }
+  this.closeDeleteColumnConfirm();
+}
+
+
 }

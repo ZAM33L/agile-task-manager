@@ -7,28 +7,21 @@
   </div>
   <h1>OrgTrix</h1>
 </header>
-
-<div class="board-layout" cdkDropListGroup>
+<div class="board-toolbar">
+  <button class="add-column-btn" (click)="openAddColumnModal()">
+    + Add Column
+  </button>
+</div>
+<div class="board-layout" cdkDropListGroup cdkScrollable>
 
   @for (column of columns; track column.id) {
-  <app-column 
-    [columnId]="column.id" 
-    [connectedTo]="connectedColumnIds" 
-    [title]="column.title" 
-    [tasks]="column.tasks"
-    [color]="column.color" 
-    [showAddButton]="true" 
-    [showDeleteAll]="true" 
-    (addTask)="openAddModal(column.id)"
-    (deleteAll)="openDeleteConfirm(column.id)" 
-    (edit)="openEditModal($event)" 
-    (delete)="openTaskDeleteConfirm($event)"
-    [isMenuOpen]="activeMenuColumnId === column.id" 
-    (menuToggle)="toggleMenu(column.id)" 
-    (sort)="sortColumn(column, $event)"
-    [sortField]="column.sortField ?? undefined" 
-    [sortDirection]="column.sortDirection ?? undefined"
-    >
+  <app-column [columnId]="column.id" [connectedTo]="connectedColumnIds" [title]="column.title" [tasks]="column.tasks"
+    [color]="column.color" [showAddButton]="true" [showDeleteAll]="true" (addTask)="openAddModal(column.id)"
+    (deleteAll)="openDeleteConfirm(column.id)" (edit)="openEditModal($event)" (delete)="openTaskDeleteConfirm($event)"
+    [isMenuOpen]="activeMenuColumnId === column.id" (menuToggle)="toggleMenu(column.id)"
+    (sort)="sortColumn(column, $event)" [sortField]="column.sortField ?? undefined"
+    [sortDirection]="column.sortDirection ?? undefined" (resetSort)="resetColumnSort(column)"
+    (deleteColumn)="openDeleteColumnConfirm($event)">
   </app-column>
   }
 
@@ -230,6 +223,85 @@
       <button class="danger-btn" (click)="confirmTaskDelete()">
         Yes, Delete
       </button>
+    </div>
+  </div>
+</div>
+}
+
+<!--Add Column Modal-->
+@if (showAddColumnModal) {
+<div class="modal-backdrop">
+  <div class="modal">
+    <h3>Add New Column</h3>
+
+    <!-- TITLE -->
+    <input type="text" placeholder="Column Title" [(ngModel)]="columnTitleInput" />
+
+    <!-- COLOR SELECT (CDK) -->
+    <div class="cdk-select" cdkOverlayOrigin #colorTrigger="cdkOverlayOrigin" (click)="toggleColumnColor()">
+      {{ columnColorInput || 'Select Color' }}
+    </div>
+
+    <ng-template cdk-connected-overlay [cdkConnectedOverlayOrigin]="colorTrigger"
+      [cdkConnectedOverlayOpen]="isColumnColorOpen" [cdkConnectedOverlayHasBackdrop]="true"
+      (backdropClick)="closeColumnColor()">
+      <div class="color-palette">
+        @for (color of availableColors; track color.value) {
+        <div class="color-swatch" [ngStyle]="{'background-color': color.value}"
+          [class.selected]="columnColorInput === color.value" title="{{color.name}}"
+          (click)="columnColorInput = color.value; closeColumnColor()">
+        </div>
+        }
+      </div>
+    </ng-template>
+
+
+    <!-- POSITION SELECT (CDK) -->
+    <div class="cdk-select" cdkOverlayOrigin #positionTrigger="cdkOverlayOrigin" (click)="toggleColumnPosition()">
+      Insert at:
+      @if (columnInsertPosition === columns.length) {
+      End
+      } @else {
+      Before "{{ columns[columnInsertPosition]?.title }}"
+      }
+    </div>
+
+    <ng-template cdk-connected-overlay [cdkConnectedOverlayOrigin]="positionTrigger"
+      [cdkConnectedOverlayOpen]="isColumnPositionOpen" [cdkConnectedOverlayHasBackdrop]="true"
+      (backdropClick)="closeColumnPosition()">
+      <div class="dropdown-panel">
+        @for (column of columns; let i = $index; track column.id) {
+        <div class="option" (click)="columnInsertPosition=i; closeColumnPosition()">
+          Before "{{ column.title }}"
+        </div>
+        }
+
+        <div class="option" (click)="columnInsertPosition=columns.length; closeColumnPosition()">
+          At End
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- ACTION BUTTONS -->
+    <div class="modal-actions">
+      <button (click)="addColumn()">Add</button>
+      <button (click)="closeAddColumnModal()">Cancel</button>
+    </div>
+
+  </div>
+</div>
+}
+<!--delete column modal-->
+
+@if (showColumnDeleteConfirm){
+<div class="modal-overlay">
+  <div class="modal-box">
+    <h3>Delete Column</h3>
+    <p>Are you sure you want to delete this column and all its tasks?</p>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="closeDeleteColumnConfirm()">Cancel</button>
+      <button class="danger-btn" (click)="confirmColumnDelete()">Yes, Delete</button>
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 <div class="column">
-  <div class="column-header" [ngClass]="color">
+  <div class="column-header" [ngStyle]="{'background': getHeaderGradient(color), 'color': getTextColor(color)}">
     <h2 class="column-title">{{ title }}</h2>
 
     @if (showDeleteAll || columnId !== 'todo') {
@@ -29,6 +29,9 @@
           }
         </button>
 
+        <button (click)="onResetSort(); toggleMenu($event)">
+          Reset Sorting
+        </button>
 
 
         @if (columnId !== 'todo') {
@@ -40,6 +43,11 @@
         @if (showDeleteAll) {
         <button (click)="onDeleteAll(); toggleMenu($event)">
           Delete All Tasks
+        </button>
+        }
+        @if (columnId !== 'todo') {
+        <button (click)="onDeleteColumn()">
+          Delete Column
         </button>
         }
 
