@@ -112,6 +112,7 @@ body {
     overflow-x: auto;
     overflow-y: hidden;
     align-items: flex-start;
+    min-height: calc(100vh - 60px - 40px);
   }
 
   .column {

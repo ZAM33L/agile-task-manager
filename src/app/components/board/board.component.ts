@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener , OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OverlayModule, ConnectedPosition } from '@angular/cdk/overlay';
@@ -22,6 +22,48 @@ import { ColumnComponent } from '../column/column.component';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent {
+
+  // =============================
+  // INIT
+  // =============================
+
+  ngOnInit(){
+    console.log('BoardComponent initialized');
+    this.loadBoard();
+  }
+
+  // =============================
+  // LOCAL STORAGE
+  // =============================
+
+  saveBoard(){
+    localStorage.setItem('taskboard',JSON.stringify(this.columns))
+    console.log('Board saved to localStorage');
+  }
+
+  loadBoard(){
+    console.log('Attempting to load board from localStorage...');
+    const savedData = localStorage.getItem('taskboard')
+
+    if(!savedData) {
+      console.log('No saved board found. Using default columns.');
+      return;
+    }
+
+    const parsed:Column[] = JSON.parse(savedData)
+
+    //restoring date objects
+    parsed.forEach(column=>{
+      column.tasks.forEach(task=>{
+        if(task.dueDate){
+          task.dueDate = new Date(task.dueDate);
+        }
+      })
+    })
+    this.columns = parsed
+    console.log('Board loaded successfully:', this.columns);
+  }
+
   // =============================
   // COLUMNS
   // =============================
@@ -58,13 +100,21 @@ export class BoardComponent {
 
   addTask() {
     const column = this.columns.find(c => c.id === this.currentColumnId);
-    if (!column) return;
+    if (!column) {
+      console.log('Column not found while adding task');
+      return;
+    }
 
     column.tasks.push({
       ...this.newTask,
       id: Date.now()
     });
+    console.log(`Task added to column "${column.title}"`, {
+      ...this.newTask,
+      id: Date.now()
+    });
 
+    this.saveBoard();
     this.closeAddModal();
   }
 
@@ -100,16 +150,20 @@ export class BoardComponent {
   }
 
   updateTask() {
-    if (!this.editingTask) return;
+    if (!this.editingTask) {
+      console.log('❌ No task selected for update');
+      return;
+    }
 
     for (const column of this.columns) {
       const index = column.tasks.findIndex(t => t.id === this.editingTask!.id);
       if (index !== -1) {
         column.tasks[index] = { ...this.editingTask };
+        console.log(`Task updated in column "${column.title}"`, this.editingTask);
         break;
       }
     }
-
+    this.saveBoard();
     this.closeEditModal();
   }
 
@@ -131,15 +185,19 @@ export class BoardComponent {
   }
 
   confirmTaskDelete() {
-    if (!this.taskToDelete) return;
+    if (!this.taskToDelete) {
+      console.log('No task selected for deletion');
+      return;
+    }
 
     const column = this.columns.find(c => c.id === this.taskToDelete!.columnId);
     if (column) {
       column.tasks = column.tasks.filter(
         task => task.id !== this.taskToDelete!.taskId
       );
+       console.log(`Task deleted from column "${column.title}". ID:`,this.taskToDelete.taskId);
     }
-
+    this.saveBoard();
     this.closeTaskDeleteConfirm();
   }
 
@@ -163,8 +221,19 @@ export class BoardComponent {
     const column = this.columns.find(c => c.id === this.deleteColumnId);
     if (column) {
       column.tasks = [];
+      console.log(`All tasks cleared in column "${column.title}"`);
     }
+    this.saveBoard();
     this.closeDeleteConfirm();
+  }
+
+  // =============================
+  // DRAG DROP SAVE
+  // =============================
+
+  onTaskMoved() {
+    console.log('Drag & drop detected. Board order updated.');
+    this.saveBoard();
   }
 
   // =============================
@@ -315,6 +384,8 @@ export class BoardComponent {
   /* ========================= */
 
   sortColumn(column: Column, field: 'priority' | 'dueDate') {
+    console.log(`Sorting column "${column.title}" by ${field}`);
+
     //cloning the original order
     if (!column.originalTasks) {
       column.originalTasks = [...column.tasks];
@@ -352,15 +423,20 @@ export class BoardComponent {
         return (a.dueDate.getTime() - b.dueDate.getTime()) * direction;
       });
     }
+    console.log('Sort direction:', column.sortDirection);
+    this.saveBoard();
   }
 
   resetColumnSort(column: Column) {
     if (column.originalTasks) {
       column.tasks = [...column.originalTasks];
+      console.log(`Sort reset for column "${column.title}"`);
     }
 
     column.sortField = undefined;
     column.sortDirection = undefined;
+
+    this.saveBoard();
   }
 
   // =============================
@@ -418,7 +494,10 @@ availableColors: { name: string; value: string }[] = [
 
 
 addColumn(){
-  if(!this.columnTitleInput.trim()) return;
+  if(!this.columnTitleInput.trim()) {
+    console.log('❌ Cannot add column without title');
+    return;
+  }
 
   const newColumn:Column = {
     id:'col-'+Date.now(),
@@ -427,11 +506,17 @@ addColumn(){
     tasks:[]
   };
   this.columns.splice(this.columnInsertPosition,0,newColumn);
+  
+  console.log('New column added:', newColumn);
+  console.log('Inserted at position:', this.columnInsertPosition);
 
+  this.saveBoard();
   this.closeAddColumnModal()
 }
 
-//delete columns
+// =============================
+// DELETE COLUMN MODAL
+// =============================
 
 // Column delete modal state
 showColumnDeleteConfirm = false;
@@ -451,11 +536,25 @@ closeDeleteColumnConfirm() {
 
 // Confirm deletion
 confirmColumnDelete() {
-  if (this.columnToDeleteId) {
-    this.columns = this.columns.filter(col => col.id !== this.columnToDeleteId);
+  
+  if (!this.columnToDeleteId) {
+    console.log('No columns deleted')
+    return;
   }
+  const column = this.columns.find(
+    col => col.id === this.columnToDeleteId
+  );
+
+  this.columns = this.columns.filter(
+    col => col.id !== this.columnToDeleteId
+  );
+
+  console.log(`Column deleted: ${column?.title}`);
+
+  this.saveBoard();
   this.closeDeleteColumnConfirm();
 }
+
 
 
 }

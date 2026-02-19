@@ -21,7 +21,7 @@
     [isMenuOpen]="activeMenuColumnId === column.id" (menuToggle)="toggleMenu(column.id)"
     (sort)="sortColumn(column, $event)" [sortField]="column.sortField ?? undefined"
     [sortDirection]="column.sortDirection ?? undefined" (resetSort)="resetColumnSort(column)"
-    (deleteColumn)="openDeleteColumnConfirm($event)">
+    (deleteColumn)="openDeleteColumnConfirm($event)" (taskMoved)="onTaskMoved()">
   </app-column>
   }
 
