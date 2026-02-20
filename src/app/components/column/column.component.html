@@ -60,6 +60,12 @@
   <!-- TASK LIST -->
   <div cdkDropList [id]="columnId" [cdkDropListData]="tasks" [cdkDropListConnectedTo]="connectedTo" class="task-list"
     (cdkDropListDropped)="drop($event)">
+    @if(tasks.length === 0){
+      <div class="empty-placeholder">
+        <p>No tasks at the moment .
+        <br>Drop your tasks here</p>
+      </div>
+    }
     @for (task of tasks; track task.id) {
     <div cdkDrag>
       <app-task [task]="task" (edit)="onEdit($event)" (delete)="onDelete($event)">

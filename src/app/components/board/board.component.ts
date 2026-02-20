@@ -250,6 +250,7 @@ export class BoardComponent {
   @HostListener('document:click')
   closeMenus() {
     this.activeMenuColumnId = null;
+    this.isToolbarMenuOpen = false;
   }
 
   // =============================
@@ -555,6 +556,35 @@ confirmColumnDelete() {
   this.closeDeleteColumnConfirm();
 }
 
+// =============================
+// RESET BOARD
+// =============================
+isToolbarMenuOpen = false;
+showResetBoardConfirm = false;
 
+toggleToolbarMenu(event:MouseEvent){
+  event.stopPropagation()
+  this.isToolbarMenuOpen = !this.isToolbarMenuOpen;
+}
+
+openResetBoardConfirm(){
+  this.isToolbarMenuOpen = false;
+  this.showResetBoardConfirm = true;
+}
+
+closeResetBoardConfirm(){
+  this.showResetBoardConfirm = false;
+}
+
+confirmResetBoard(){
+  console.log("resetting entire board");
+
+  localStorage.removeItem('taskboard')
+  console.log("local storage cleared")
+
+  this.showResetBoardConfirm = false;
+
+  location.reload()
+}
 
 }

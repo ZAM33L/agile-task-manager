@@ -7,11 +7,25 @@
   </div>
   <h1>OrgTrix</h1>
 </header>
+
 <div class="board-toolbar">
+  <!-- left side -->
   <button class="add-column-btn" (click)="openAddColumnModal()">
     + Add Column
   </button>
+  <!-- right side -->
+   <div class="toolbar-menu">
+    <button class="menu-btn" (click)="toggleToolbarMenu($event)">⋮</button>
+    @if(isToolbarMenuOpen){
+      <div class="dropdown">
+        <button (click)="openResetBoardConfirm()">
+          Reset Board
+        </button>
+      </div>
+    }
+   </div>
 </div>
+
 <div class="board-layout" cdkDropListGroup cdkScrollable>
 
   @for (column of columns; track column.id) {
@@ -46,11 +60,23 @@
       [cdkConnectedOverlayOpen]="isAddDropdownOpen" [cdkConnectedOverlayHasBackdrop]="true"
       (backdropClick)="closeAddDropdown()">
 
-      <div class="dropdown-panel">
-        <div class="option" (click)="selectAddPriority('High')">High</div>
-        <div class="option" (click)="selectAddPriority('Medium')">Medium</div>
-        <div class="option" (click)="selectAddPriority('Low')">Low</div>
+      <div class="dropdown-panel priority-dropdown">
+        <div class="option high" (click)="selectAddPriority('High')">
+          <span class="dot red-dot"></span>
+          High
+        </div>
+
+        <div class="option medium" (click)="selectAddPriority('Medium')">
+          <span class="dot yellow-dot"></span>
+          Medium
+        </div>
+
+        <div class="option low" (click)="selectAddPriority('Low')">
+          <span class="dot green-dot"></span>
+          Low
+        </div>
       </div>
+
     </ng-template>
 
     <div class="cdk-select" cdkOverlayOrigin #addDateTrigger="cdkOverlayOrigin" (click)="toggleAddDate()">
@@ -122,11 +148,24 @@
       editingTask.priority || 'Select Priority' }} </div> <ng-template cdk-connected-overlay
       [cdkConnectedOverlayOrigin]="editTrigger" [cdkConnectedOverlayOpen]="isEditDropdownOpen"
       [cdkConnectedOverlayHasBackdrop]="true" (backdropClick)="closeEditDropdown()">
-      <div class="dropdown-panel">
-        <div class="option" (click)="selectEditPriority('High')">High</div>
-        <div class="option" (click)="selectEditPriority('Medium')">Medium</div>
-        <div class="option" (click)="selectEditPriority('Low')">Low</div>
+
+      <div class="dropdown-panel priority-dropdown">
+        <div class="option high" (click)="selectAddPriority('High')">
+          <span class="dot red-dot"></span>
+          High
+        </div>
+
+        <div class="option medium" (click)="selectAddPriority('Medium')">
+          <span class="dot yellow-dot"></span>
+          Medium
+        </div>
+
+        <div class="option low" (click)="selectAddPriority('Low')">
+          <span class="dot green-dot"></span>
+          Low
+        </div>
       </div>
+
     </ng-template>
 
     <div class="cdk-select" cdkOverlayOrigin #editDateTrigger="cdkOverlayOrigin" (click)="toggleEditDate()">
@@ -172,12 +211,7 @@
 
       </div>
 
-
-
     </ng-template>
-
-
-
 
     <div class="modal-actions">
       <button (click)="updateTask()">Update</button>
@@ -302,6 +336,22 @@
     <div class="modal-actions">
       <button class="cancel-btn" (click)="closeDeleteColumnConfirm()">Cancel</button>
       <button class="danger-btn" (click)="confirmColumnDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- RESET BOARD MODAL -->
+
+@if(showResetBoardConfirm){
+  <div class="modal-overlay">
+  <div class="modal-box">
+    <h3>Reset Board</h3>
+    <p>Are you sure you want to reset the board ? </p>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="closeResetBoardConfirm()">Cancel</button>
+      <button class="danger-btn" (click)="confirmResetBoard()">Yes, Reset</button>
     </div>
   </div>
 </div>
