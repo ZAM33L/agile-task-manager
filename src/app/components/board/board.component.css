@@ -25,10 +25,12 @@ body {
   color: white;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* aligns items to left */ /* allows for future buttons/logo */
+  justify-content: flex-start;
+  /* aligns items to left */
+  /* allows for future buttons/logo */
   padding: 0 40px;
 
- background: linear-gradient(135deg, #2c3e50, #34495e);
+  background: linear-gradient(135deg, #2c3e50, #34495e);
 
 
   color: white;
@@ -50,7 +52,8 @@ body {
 
 .header-icon {
   display: flex;
-  gap: 4px; /* spacing between blocks */
+  gap: 4px;
+  /* spacing between blocks */
   margin-right: 20px
 }
 
@@ -79,8 +82,9 @@ body {
 }
 
 .header-icon .block:hover {
-  transform: scale(1.4) rotate(5deg); /* slight pop + tilt */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transform: scale(1.4) rotate(5deg);
+  /* slight pop + tilt */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 
@@ -102,8 +106,10 @@ body {
 /* Large Screens → Horizontal Scroll */
 @media (min-width: 1200px) {
   body {
-    overflow-y: hidden;   /* 🚫 remove page vertical scroll */
+    overflow-y: hidden;
+    /* 🚫 remove page vertical scroll */
   }
+
   .board-layout {
     display: flex;
     flex-direction: row;
@@ -116,7 +122,8 @@ body {
   }
 
   .column {
-    flex: 0 0 340px; /* fixed width */
+    flex: 0 0 340px;
+    /* fixed width */
   }
 }
 
@@ -175,6 +182,7 @@ body {
 }
 
 @media (max-width: 480px) {
+
   .modal,
   .modal-box {
     max-width: 100%;
@@ -225,8 +233,9 @@ input[type="date"] {
 .modal-actions button:first-child {
   background: #667eea;
   color: white;
-  
+
 }
+
 .modal-actions button:nth-child(2) {
   background: #eb2828;
   color: white;
@@ -254,7 +263,7 @@ input[type="date"] {
 .dropdown-panel {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
   padding: 6px 0;
   min-width: 180px;
 }
@@ -276,7 +285,7 @@ input[type="date"] {
   background: white;
   padding: 12px;
   border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   min-width: 260px;
 }
 
@@ -293,6 +302,7 @@ input[type="date"] {
 .date-cell:hover {
   background: #f0f0f0;
 }
+
 .date-cell.selected {
   background: #2563eb;
   color: white;
@@ -331,7 +341,8 @@ input[type="date"] {
 
 .board-toolbar {
   position: fixed;
-  top: 60px;            /* SAME as header height */
+  top: 60px;
+  /* SAME as header height */
   left: 0;
   height: 50px;
   width: 100%;
@@ -343,11 +354,13 @@ input[type="date"] {
   padding: 12px 16px;
   gap: 12px;
 
-  background: #f9fafb;  /* important so it doesn't look transparent */
+  background: #f9fafb;
+  /* important so it doesn't look transparent */
   border-bottom: 1px solid #e5e7eb;
 }
 
-.add-column-btn {
+.add-column-btn,
+.edit-column-btn {
   background: #f3f4f6;
   border: 2px dashed #cbd5e1;
   color: #374151;
@@ -358,7 +371,8 @@ input[type="date"] {
   transition: 0.2s ease;
 }
 
-.add-column-btn:hover {
+.add-column-btn:hover,
+.edit-column-btn:hover {
   background: #e5e7eb;
   border-color: #3b82f6;
   color: #3b82f6;
@@ -367,14 +381,16 @@ input[type="date"] {
 /* Palette container */
 .color-palette {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 40px); /* each swatch 40px wide */
+  grid-template-columns: repeat(auto-fill, 40px);
+  /* each swatch 40px wide */
   gap: 8px;
   padding: 10px;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  max-width: 220px; /* optional to limit width */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 220px;
+  /* optional to limit width */
 }
 
 /* Each color square */
@@ -462,6 +478,13 @@ input[type="date"] {
   align-items: center;
 }
 
+.toolbar-left {
+  display: flex;
+  gap: 12px;
+  /* space between Add & Edit */
+  align-items: center;
+}
+
 /* Three dot button */
 .toolbar-menu .menu-btn {
   background: transparent;
@@ -481,7 +504,8 @@ input[type="date"] {
 .toolbar-menu .dropdown {
   position: absolute;
   top: 40px;
-  right: 0; /* ensures it opens aligned to right */
+  right: 0;
+  /* ensures it opens aligned to right */
   background: white;
   border-radius: 12px;
   padding: 8px;
@@ -509,4 +533,100 @@ input[type="date"] {
 .toolbar-menu .dropdown button:hover {
   background: #ffecec;
   color: #d63031;
+}
+
+/* ===================================== */
+/* EDIT COLUMN MODAL  */
+/* ===================================== */
+
+/* Optional subtle header accent */
+.modal h3 {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Column selector dropdown spacing */
+.edit-column-selector {
+  margin-bottom: 15px;
+}
+
+/* Selected column preview (optional enhancement) */
+.selected-column-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 15px;
+}
+
+.selected-column-preview .color-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+/* Update button stronger visual */
+.modal-actions button.update-btn {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.modal-actions button.update-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+}
+
+/* =============================== */
+/* TOAST NOTIFICATION */
+/* =============================== */
+
+.toast {
+  position: fixed;
+  top: 80px;
+  /* below header */
+  right: 30px;
+  min-width: 250px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-weight: 500;
+  color: white;
+  z-index: 2000;
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease;
+}
+
+.toast.success {
+  background: #4caf50;
+}
+
+.toast.info {
+  background: #2196f3;
+}
+
+.toast.warning {
+  background: #ff9800;
+}
+
+.toast.error {
+  background: #f44336;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }

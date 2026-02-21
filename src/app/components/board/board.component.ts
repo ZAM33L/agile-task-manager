@@ -1,4 +1,4 @@
-import { Component, HostListener , OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OverlayModule, ConnectedPosition } from '@angular/cdk/overlay';
@@ -7,6 +7,7 @@ import { Task } from '../../models/task.model';
 import { Column } from '../../models/column.model';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ColumnComponent } from '../column/column.component';
+import { F } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-board',
@@ -27,7 +28,7 @@ export class BoardComponent {
   // INIT
   // =============================
 
-  ngOnInit(){
+  ngOnInit() {
     console.log('BoardComponent initialized');
     this.loadBoard();
   }
@@ -36,26 +37,26 @@ export class BoardComponent {
   // LOCAL STORAGE
   // =============================
 
-  saveBoard(){
-    localStorage.setItem('taskboard',JSON.stringify(this.columns))
+  saveBoard() {
+    localStorage.setItem('taskboard', JSON.stringify(this.columns))
     console.log('Board saved to localStorage');
   }
 
-  loadBoard(){
+  loadBoard() {
     console.log('Attempting to load board from localStorage...');
     const savedData = localStorage.getItem('taskboard')
 
-    if(!savedData) {
+    if (!savedData) {
       console.log('No saved board found. Using default columns.');
       return;
     }
 
-    const parsed:Column[] = JSON.parse(savedData)
+    const parsed: Column[] = JSON.parse(savedData)
 
     //restoring date objects
-    parsed.forEach(column=>{
-      column.tasks.forEach(task=>{
-        if(task.dueDate){
+    parsed.forEach(column => {
+      column.tasks.forEach(task => {
+        if (task.dueDate) {
           task.dueDate = new Date(task.dueDate);
         }
       })
@@ -116,6 +117,7 @@ export class BoardComponent {
 
     this.saveBoard();
     this.closeAddModal();
+    this.showNotification('Task added successfully!', 'success');
   }
 
   private createEmptyTask(): Task {
@@ -165,6 +167,7 @@ export class BoardComponent {
     }
     this.saveBoard();
     this.closeEditModal();
+    this.showNotification('Task updated successfully!', 'success');
   }
 
   // =============================
@@ -195,10 +198,11 @@ export class BoardComponent {
       column.tasks = column.tasks.filter(
         task => task.id !== this.taskToDelete!.taskId
       );
-       console.log(`Task deleted from column "${column.title}". ID:`,this.taskToDelete.taskId);
+      console.log(`Task deleted from column "${column.title}". ID:`, this.taskToDelete.taskId);
     }
     this.saveBoard();
     this.closeTaskDeleteConfirm();
+    this.showNotification("Task deleted !",'success')
   }
 
   // =============================
@@ -225,6 +229,7 @@ export class BoardComponent {
     }
     this.saveBoard();
     this.closeDeleteConfirm();
+    this.showNotification(` tasks have been removed in Column "${column?.title}".`,'info');
   }
 
   // =============================
@@ -441,150 +446,315 @@ export class BoardComponent {
   }
 
   // =============================
-// ADD COLUMN MODAL
-// =============================
+  // ADD COLUMN MODAL
+  // =============================
 
-showAddColumnModal = false;
+  showAddColumnModal = false;
 
-columnTitleInput = '';
-columnColorInput = 'blue';
-columnInsertPosition = 0;
+  columnTitleInput = '';
+  columnColorInput = 'blue';
+  columnInsertPosition = 0;
 
-// CDK DROPDOWNS FOR ADD COLUMN
-isColumnColorOpen = false;
-isColumnPositionOpen = false;
-
-
-openAddColumnModal(){
-  this.columnTitleInput='';
-  this.columnColorInput='blue'
-  this.columnInsertPosition = this.columns.length;
-  this.showAddColumnModal = true
-}
-closeAddColumnModal(){
-  this.showAddColumnModal = false;
-}
-
-toggleColumnColor() {
-  this.isColumnColorOpen = !this.isColumnColorOpen;
-}
-
-closeColumnColor() {
-  this.isColumnColorOpen = false;
-}
-
-toggleColumnPosition() {
-  this.isColumnPositionOpen = !this.isColumnPositionOpen;
-}
-
-closeColumnPosition() {
-  this.isColumnPositionOpen = false;
-}
-
-// Available colors for new columns
-availableColors: { name: string; value: string }[] = [
-  { name: 'Red', value: 'red' },
-  { name: 'Yellow', value: 'yellow' },
-  { name: 'Green', value: 'green' },
-  { name: 'Blue', value: 'blue' },
-  { name: 'Purple', value: 'purple' },
-  { name: 'Orange', value: 'orange' },
-  { name: 'Pink', value: 'pink' },
-  { name: 'Teal', value: 'teal' }
-];
+  // CDK DROPDOWNS FOR ADD COLUMN
+  isColumnColorOpen = false;
+  isColumnPositionOpen = false;
 
 
-addColumn(){
-  if(!this.columnTitleInput.trim()) {
-    console.log('❌ Cannot add column without title');
-    return;
+  openAddColumnModal() {
+    this.columnTitleInput = '';
+    this.columnColorInput = 'blue'
+    this.columnInsertPosition = this.columns.length;
+    this.showAddColumnModal = true
+  }
+  closeAddColumnModal() {
+    this.showAddColumnModal = false;
   }
 
-  const newColumn:Column = {
-    id:'col-'+Date.now(),
-    title:this.columnTitleInput.trim(),
-    color:this.columnColorInput,
-    tasks:[]
-  };
-  this.columns.splice(this.columnInsertPosition,0,newColumn);
-  
-  console.log('New column added:', newColumn);
-  console.log('Inserted at position:', this.columnInsertPosition);
-
-  this.saveBoard();
-  this.closeAddColumnModal()
-}
-
-// =============================
-// DELETE COLUMN MODAL
-// =============================
-
-// Column delete modal state
-showColumnDeleteConfirm = false;
-columnToDeleteId: string | null = null;
-
-// Trigger modal
-openDeleteColumnConfirm(columnId: string) {
-  this.columnToDeleteId = columnId;
-  this.showColumnDeleteConfirm = true;
-}
-
-// Close modal
-closeDeleteColumnConfirm() {
-  this.showColumnDeleteConfirm = false;
-  this.columnToDeleteId = null;
-}
-
-// Confirm deletion
-confirmColumnDelete() {
-  
-  if (!this.columnToDeleteId) {
-    console.log('No columns deleted')
-    return;
+  toggleColumnColor() {
+    this.isColumnColorOpen = !this.isColumnColorOpen;
   }
-  const column = this.columns.find(
-    col => col.id === this.columnToDeleteId
-  );
 
-  this.columns = this.columns.filter(
-    col => col.id !== this.columnToDeleteId
-  );
+  closeColumnColor() {
+    this.isColumnColorOpen = false;
+  }
 
-  console.log(`Column deleted: ${column?.title}`);
+  toggleColumnPosition() {
+    this.isColumnPositionOpen = !this.isColumnPositionOpen;
+  }
 
-  this.saveBoard();
-  this.closeDeleteColumnConfirm();
+  closeColumnPosition() {
+    this.isColumnPositionOpen = false;
+  }
+
+  // Available colors for new columns
+  availableColors: { name: string; value: string }[] = [
+    { name: 'Red', value: 'red' },
+    { name: 'Yellow', value: 'yellow' },
+    { name: 'Green', value: 'green' },
+    { name: 'Blue', value: 'blue' },
+    { name: 'Purple', value: 'purple' },
+    { name: 'Orange', value: 'orange' },
+    { name: 'Pink', value: 'pink' },
+    { name: 'Teal', value: 'teal' }
+  ];
+
+
+  addColumn() {
+    if (!this.columnTitleInput.trim()) {
+      console.log('❌ Cannot add column without title');
+      return;
+    }
+
+    const newColumn: Column = {
+      id: 'col-' + Date.now(),
+      title: this.columnTitleInput.trim(),
+      color: this.columnColorInput,
+      tasks: []
+    };
+    this.columns.splice(this.columnInsertPosition, 0, newColumn);
+
+    console.log('New column added:', newColumn);
+    console.log('Inserted at position:', this.columnInsertPosition);
+
+    this.saveBoard();
+    this.closeAddColumnModal();
+    this.showNotification(`Column "${newColumn.title}" added`, 'success');
+  }
+
+  // =============================
+  // DELETE COLUMN MODAL
+  // =============================
+
+  // Column delete modal state
+  showColumnDeleteConfirm = false;
+  columnToDeleteId: string | null = null;
+
+  // Trigger modal
+  openDeleteColumnConfirm(columnId: string) {
+    this.columnToDeleteId = columnId;
+    this.showColumnDeleteConfirm = true;
+  }
+
+  // Close modal
+  closeDeleteColumnConfirm() {
+    this.showColumnDeleteConfirm = false;
+    this.columnToDeleteId = null;
+  }
+
+  // Confirm deletion
+  confirmColumnDelete() {
+
+    if (!this.columnToDeleteId) {
+      console.log('No columns deleted')
+      return;
+    }
+    const column = this.columns.find(
+      col => col.id === this.columnToDeleteId
+    );
+
+    this.columns = this.columns.filter(
+      col => col.id !== this.columnToDeleteId
+    );
+
+    console.log(`Column deleted: ${column?.title}`);
+
+    this.saveBoard();
+    this.closeDeleteColumnConfirm();
+    this.showNotification(`Column "${column?.title}" and its tasks have been removed.`,'info');
+  }
+
+  // =============================
+  // RESET BOARD
+  // =============================
+  isToolbarMenuOpen = false;
+  showResetBoardConfirm = false;
+
+  toggleToolbarMenu(event: MouseEvent) {
+    event.stopPropagation()
+    this.isToolbarMenuOpen = !this.isToolbarMenuOpen;
+  }
+
+  openResetBoardConfirm() {
+    this.isToolbarMenuOpen = false;
+    this.showResetBoardConfirm = true;
+  }
+
+  closeResetBoardConfirm() {
+    this.showResetBoardConfirm = false;
+  }
+
+  confirmResetBoard() {
+    console.log("resetting entire board");
+
+    localStorage.removeItem('taskboard')
+    console.log("local storage cleared")
+
+    this.showResetBoardConfirm = false;
+
+    location.reload()
+  }
+
+  // =============================
+  // EDIT COLUMN MODAL
+  // =============================
+
+  showEditColumnModal = false;
+
+  editColumnId: string | null = null;
+  editColumnTitle = '';
+  editColumnColor = 'blue';
+  editColumnPosition = 0;
+
+  // Dropdown states
+  isEditColumnSelectOpen = false;
+  isEditColumnColorOpen = false;
+  isEditColumnPositionOpen = false;
+
+
+  // =============================
+  // OPEN / CLOSE MODAL
+  // =============================
+
+  openEditColumnModal() {
+    if (!this.columns.length) {
+      console.log('No columns available to edit');
+      return;
+    }
+
+    // Default select first column
+    const column = this.columns[0];
+
+    this.editColumnId = column.id;
+    this.editColumnTitle = column.title;
+    this.editColumnColor = column.color;
+    this.editColumnPosition = this.columns.indexOf(column);
+
+    this.showEditColumnModal = true;
+
+    console.log('Edit Column modal opened');
+  }
+
+  closeEditColumnModal() {
+    this.showEditColumnModal = false;
+    this.editColumnId = null;
+
+    // Close all dropdowns
+    this.isEditColumnSelectOpen = false;
+    this.isEditColumnColorOpen = false;
+    this.isEditColumnPositionOpen = false;
+
+    console.log('Edit Column modal closed');
+  }
+
+  get selectedEditColumn() {
+    return this.columns.find(col => col.id === this.editColumnId) || null;
+  }
+
+
+  // =============================
+  // SELECT COLUMN TO EDIT
+  // =============================
+
+  selectColumnToEdit(columnId: string) {
+    const column = this.columns.find(col => col.id === columnId);
+    if (!column) return;
+
+    this.editColumnId = column.id;
+    this.editColumnTitle = column.title;
+    this.editColumnColor = column.color;
+    this.editColumnPosition = this.columns.indexOf(column);
+
+    this.closeEditColumnSelect();
+
+    console.log(`Selected column to edit: ${column.title}`);
+  }
+
+
+  // =============================
+  // UPDATE COLUMN
+  // =============================
+
+  updateColumn() {
+    if (!this.editColumnId) return;
+
+    const index = this.columns.findIndex(col => col.id === this.editColumnId);
+    if (index === -1) return;
+
+    const updatedColumn: Column = {
+      ...this.columns[index],
+      title: this.editColumnTitle.trim(),
+      color: this.editColumnColor
+    };
+
+    // Remove old position
+    this.columns.splice(index, 1);
+
+    // Insert at new position
+    this.columns.splice(this.editColumnPosition, 0, updatedColumn);
+
+    console.log(`Column updated: ${updatedColumn.title}`);
+
+    this.saveBoard();
+    this.closeEditColumnModal();
+    this.showNotification(`Column "${updatedColumn.title}" updated`, 'info');
+  }
+
+
+  // =============================
+  // DROPDOWN TOGGLES
+  // =============================
+
+  // Column Select Dropdown
+  toggleEditColumnSelect() {
+    this.isEditColumnSelectOpen = !this.isEditColumnSelectOpen;
+  }
+
+  closeEditColumnSelect() {
+    this.isEditColumnSelectOpen = false;
+  }
+
+
+  // Color Dropdown
+  toggleEditColumnColor() {
+    this.isEditColumnColorOpen = !this.isEditColumnColorOpen;
+  }
+
+  closeEditColumnColor() {
+    this.isEditColumnColorOpen = false;
+  }
+
+
+  // Position Dropdown
+  toggleEditColumnPosition() {
+    this.isEditColumnPositionOpen = !this.isEditColumnPositionOpen;
+  }
+
+  closeEditColumnPosition() {
+    this.isEditColumnPositionOpen = false;
+  }
+
+  // =============================
+  // TOAST NOTIFICATION SYSTEM
+  // =============================
+
+  constructor(private cdr: ChangeDetectorRef) { }
+
+  toastMessage = '';
+  toastType: 'success' | 'info' = 'success';
+  showToast = false;
+
+  showNotification(message: string, type: 'success' | 'info' = 'success') {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.showToast = true;
+
+    setTimeout(() => {
+      this.showToast = false;
+      this.cdr.detectChanges(); // 👈 force UI update
+    }, 3000);
+  }
+
+
 }
 
-// =============================
-// RESET BOARD
-// =============================
-isToolbarMenuOpen = false;
-showResetBoardConfirm = false;
 
-toggleToolbarMenu(event:MouseEvent){
-  event.stopPropagation()
-  this.isToolbarMenuOpen = !this.isToolbarMenuOpen;
-}
-
-openResetBoardConfirm(){
-  this.isToolbarMenuOpen = false;
-  this.showResetBoardConfirm = true;
-}
-
-closeResetBoardConfirm(){
-  this.showResetBoardConfirm = false;
-}
-
-confirmResetBoard(){
-  console.log("resetting entire board");
-
-  localStorage.removeItem('taskboard')
-  console.log("local storage cleared")
-
-  this.showResetBoardConfirm = false;
-
-  location.reload()
-}
-
-}
