@@ -646,3 +646,28 @@ input[type="date"] {
   pointer-events: none;
   cursor: not-allowed;
 }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.modal-icon {
+  font-size: 28px;
+  color: #ff9800;
+}
+
+.danger-modal h3 {
+  margin: 0;
+}
+
+.danger-btn {
+  background-color: #e53935;
+  color: white;
+}
+
+.danger-btn:hover {
+  background-color: #c62828;
+}

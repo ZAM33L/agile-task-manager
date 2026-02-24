@@ -1,6 +1,9 @@
 <div class="column">
   <div class="column-header" [ngStyle]="{'background': getHeaderGradient(color), 'color': getTextColor(color)}">
     <h2 class="column-title">{{ title }}</h2>
+    <span class="task-count-badge">
+      {{tasks.length}} Tasks
+    </span>
 
     @if (showDeleteAll || columnId !== 'todo') {
     <div class="menu-container">

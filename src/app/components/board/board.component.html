@@ -159,7 +159,12 @@
   <div class="modal">
     <h3>Edit Task</h3>
 
-    <input type="text" [(ngModel)]="editingTask.title">
+    <input type="text" [(ngModel)]="editingTask.title" [class.invalid]="!editingTask.title.trim() && attemptedEditSubmit">
+    @if(!editingTask.title.trim() && attemptedEditSubmit){
+      <div class="error-msg">
+        Title is required
+      </div>
+    }
     <textarea [(ngModel)]="editingTask.description"></textarea>
 
     <div class="cdk-select" cdkOverlayOrigin #editTrigger="cdkOverlayOrigin" (click)="toggleEditDropdown()"> {{
@@ -414,9 +419,13 @@
 
 
     <!-- TITLE -->
-    <input type="text" placeholder="Column Title" [(ngModel)]="editColumnTitle" />
+    <input type="text" placeholder="Column Title" [(ngModel)]="editColumnTitle" [class.invalid] = "!editColumnTitle.trim() && attemptedColumnEditSubmit" />
 
-
+    @if(!editColumnTitle.trim() && attemptedColumnEditSubmit){
+      <div class="error-msg">
+        Column title is required
+      </div>
+    }
     <!-- COLOR SELECT -->
     <div class="cdk-select" cdkOverlayOrigin #editColorTrigger="cdkOverlayOrigin" (click)="toggleEditColumnColor()">
 

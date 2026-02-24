@@ -7,7 +7,7 @@ import { Task } from '../../models/task.model';
 import { Column } from '../../models/column.model';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ColumnComponent } from '../column/column.component';
-import { F } from '@angular/cdk/keycodes';
+
 
 @Component({
   selector: 'app-board',
@@ -150,10 +150,12 @@ export class BoardComponent {
 
   showEditModal = false;
   editingTask: Task | null = null;
+  attemptedEditSubmit = false;
 
   openEditModal(task: Task) {
     this.editingTask = { ...task };
     this.showEditModal = true;
+    this.attemptedEditSubmit = false;
   }
 
   closeEditModal() {
@@ -162,8 +164,15 @@ export class BoardComponent {
   }
 
   updateTask() {
+    this.attemptedEditSubmit = true;
+
     if (!this.editingTask) {
       console.log('❌ No task selected for update');
+      return;
+    }
+
+    if(!this.editingTask.title.trim()){
+      this.showNotification('Title cannot be empty',"info")
       return;
     }
 
@@ -646,12 +655,17 @@ export class BoardComponent {
   isEditColumnColorOpen = false;
   isEditColumnPositionOpen = false;
 
+  attemptedColumnEditSubmit = false;
+
 
   // =============================
   // OPEN / CLOSE MODAL
   // =============================
 
   openEditColumnModal() {
+
+    this.attemptedColumnEditSubmit = false;
+
     if (!this.columns.length) {
       console.log('No columns available to edit');
       return;
@@ -671,6 +685,9 @@ export class BoardComponent {
   }
 
   closeEditColumnModal() {
+
+    this.attemptedColumnEditSubmit = false;
+    
     this.showEditColumnModal = false;
     this.editColumnId = null;
 
@@ -711,7 +728,14 @@ export class BoardComponent {
   // =============================
 
   updateColumn() {
+    this.attemptedColumnEditSubmit = true;
+
     if (!this.editColumnId) return;
+
+    if(!this.editColumnTitle.trim()){
+      this.showNotification('Column title cannot be empty','info');
+      return;
+    }
 
     const index = this.columns.findIndex(col => col.id === this.editColumnId);
     if (index === -1) return;
