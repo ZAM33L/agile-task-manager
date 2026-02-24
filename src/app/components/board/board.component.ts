@@ -86,20 +86,30 @@ export class BoardComponent {
   // =============================
 
   showAddModal = false;
+  attemptedSubmit = false;
 
   newTask: Task = this.createEmptyTask();
 
   openAddModal(columnId: string) {
     this.currentColumnId = columnId;
     this.showAddModal = true;
+    this.attemptedSubmit = false;
   }
 
   closeAddModal() {
     this.showAddModal = false;
+    this.attemptedSubmit = false;
     this.resetNewTask();
   }
 
   addTask() {
+    this.attemptedSubmit = true;
+
+    //validation
+    if(!this.newTask.title.trim() || !this.newTask.dueDate){
+      this.showNotification('Please fill all required fields !!','info')
+      return;
+    }
     const column = this.columns.find(c => c.id === this.currentColumnId);
     if (!column) {
       console.log('Column not found while adding task');
@@ -327,12 +337,31 @@ export class BoardComponent {
     this.isEditDateOpen = false;
   }
 
+  isPastDate(date:Date): boolean {
+    const today = new Date()
+    today.setHours(0,0,0,0)
+
+    const selected = new Date(date)
+    selected.setHours(0,0,0,0)
+
+    return selected < today
+  }
   selectAddDate(date: Date) {
+    if(this.isPastDate(date)){
+      this.showNotification('Cannot select past dates!', 'info');
+      console.log('Cannot select past dates!', 'info');
+      return;
+    }
     this.newTask.dueDate = date;
     this.closeAddDate();
   }
 
   selectEditDate(date: Date) {
+    if(this.isPastDate(date)){
+      this.showNotification('Cannot select past dates!', 'info');
+      console.log('Cannot select past dates!', 'info');
+      return;
+    }
     if (this.editingTask) {
       this.editingTask.dueDate = date;
     }
@@ -468,6 +497,7 @@ export class BoardComponent {
   }
   closeAddColumnModal() {
     this.showAddColumnModal = false;
+    this.attemptedColumnSubmit = false;
   }
 
   toggleColumnColor() {
@@ -498,9 +528,15 @@ export class BoardComponent {
     { name: 'Teal', value: 'teal' }
   ];
 
+  attemptedColumnSubmit = false;
 
   addColumn() {
+
+    this.attemptedColumnSubmit = true;
+
+
     if (!this.columnTitleInput.trim()) {
+      this.showNotification('Please fill column title','info')
       console.log('❌ Cannot add column without title');
       return;
     }
