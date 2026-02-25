@@ -1,0 +1,49 @@
+<div class="modal-backdrop">
+  <div class="modal auth-modal">
+    <h3>Sign In</h3>
+
+    <form (ngSubmit)="onSignin()">
+      <input
+        type="email"
+        placeholder="Email"
+        [(ngModel)]="email"
+        name="email"
+        required
+        [class.invalid]="attemptedSubmitSignin && !email"
+      />
+      @if(attemptedSubmitSignin && !email ){
+      <div class="error-msg">
+        Email is required
+      </div>
+        }
+
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+        name="password"
+        required
+        [class.invalid]="attemptedSubmitSignin && !password"
+      />
+      @if(attemptedSubmitSignin && !password ){
+      <div class="error-msg">
+        Password is required
+      </div>
+    }
+      <div class="modal-actions">
+        <button type="submit" [disabled]="isProcessing">Sign In</button>
+      </div>
+    </form>
+
+    <p style="margin-top: 10px; font-size: 14px; text-align: center;">
+      Don't have an account? <a routerLink="/signup">Sign Up</a>
+    </p>
+  </div>
+</div>
+
+<!-- GLOBAL TOAST -->
+@if(showToast){
+  <div class="toast" [ngClass]="toastType">
+    {{ toastMessage }}
+  </div>
+}

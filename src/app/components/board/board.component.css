@@ -650,8 +650,8 @@ input[type="date"] {
 .modal-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 
 .modal-icon {
@@ -663,11 +663,15 @@ input[type="date"] {
   margin: 0;
 }
 
-.danger-btn {
-  background-color: #e53935;
-  color: white;
-}
-
 .danger-btn:hover {
   background-color: #c62828;
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
 }

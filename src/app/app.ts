@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { BoardComponent } from './components/board/board.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [BoardComponent],
-  template: `<app-board></app-board>`,
+  imports: [RouterModule], // <-- for router-outlet
+  template: `<router-outlet></router-outlet>`,
   styleUrls: ['./app.css']
 })
 export class App {}
-

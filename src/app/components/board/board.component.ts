@@ -8,6 +8,9 @@ import { Column } from '../../models/column.model';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ColumnComponent } from '../column/column.component';
 
+import { Router } from '@angular/router';
+import { AuthService } from '../../auth/services/auth.service';
+
 
 @Component({
   selector: 'app-board',
@@ -23,6 +26,8 @@ import { ColumnComponent } from '../column/column.component';
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent {
+
+  constructor(private router: Router, private authService: AuthService, private cdr: ChangeDetectorRef) { }
 
   // =============================
   // INIT
@@ -106,8 +111,8 @@ export class BoardComponent {
     this.attemptedSubmit = true;
 
     //validation
-    if(!this.newTask.title.trim() || !this.newTask.dueDate){
-      this.showNotification('Please fill all required fields !!','info')
+    if (!this.newTask.title.trim() || !this.newTask.dueDate) {
+      this.showNotification('Please fill all required fields !!', 'info')
       return;
     }
     const column = this.columns.find(c => c.id === this.currentColumnId);
@@ -171,8 +176,8 @@ export class BoardComponent {
       return;
     }
 
-    if(!this.editingTask.title.trim()){
-      this.showNotification('Title cannot be empty',"info")
+    if (!this.editingTask.title.trim()) {
+      this.showNotification('Title cannot be empty', "info")
       return;
     }
 
@@ -221,7 +226,7 @@ export class BoardComponent {
     }
     this.saveBoard();
     this.closeTaskDeleteConfirm();
-    this.showNotification("Task deleted !",'success')
+    this.showNotification("Task deleted !", 'success')
   }
 
   // =============================
@@ -248,7 +253,7 @@ export class BoardComponent {
     }
     this.saveBoard();
     this.closeDeleteConfirm();
-    this.showNotification(` tasks have been removed in Column "${column?.title}".`,'info');
+    this.showNotification(` tasks have been removed in Column "${column?.title}".`, 'info');
   }
 
   // =============================
@@ -346,17 +351,17 @@ export class BoardComponent {
     this.isEditDateOpen = false;
   }
 
-  isPastDate(date:Date): boolean {
+  isPastDate(date: Date): boolean {
     const today = new Date()
-    today.setHours(0,0,0,0)
+    today.setHours(0, 0, 0, 0)
 
     const selected = new Date(date)
-    selected.setHours(0,0,0,0)
+    selected.setHours(0, 0, 0, 0)
 
     return selected < today
   }
   selectAddDate(date: Date) {
-    if(this.isPastDate(date)){
+    if (this.isPastDate(date)) {
       this.showNotification('Cannot select past dates!', 'info');
       console.log('Cannot select past dates!', 'info');
       return;
@@ -366,7 +371,7 @@ export class BoardComponent {
   }
 
   selectEditDate(date: Date) {
-    if(this.isPastDate(date)){
+    if (this.isPastDate(date)) {
       this.showNotification('Cannot select past dates!', 'info');
       console.log('Cannot select past dates!', 'info');
       return;
@@ -545,7 +550,7 @@ export class BoardComponent {
 
 
     if (!this.columnTitleInput.trim()) {
-      this.showNotification('Please fill column title','info')
+      this.showNotification('Please fill column title', 'info')
       console.log('❌ Cannot add column without title');
       return;
     }
@@ -605,7 +610,7 @@ export class BoardComponent {
 
     this.saveBoard();
     this.closeDeleteColumnConfirm();
-    this.showNotification(`Column "${column?.title}" and its tasks have been removed.`,'info');
+    this.showNotification(`Column "${column?.title}" and its tasks have been removed.`, 'info');
   }
 
   // =============================
@@ -687,7 +692,7 @@ export class BoardComponent {
   closeEditColumnModal() {
 
     this.attemptedColumnEditSubmit = false;
-    
+
     this.showEditColumnModal = false;
     this.editColumnId = null;
 
@@ -732,8 +737,8 @@ export class BoardComponent {
 
     if (!this.editColumnId) return;
 
-    if(!this.editColumnTitle.trim()){
-      this.showNotification('Column title cannot be empty','info');
+    if (!this.editColumnTitle.trim()) {
+      this.showNotification('Column title cannot be empty', 'info');
       return;
     }
 
@@ -797,7 +802,7 @@ export class BoardComponent {
   // TOAST NOTIFICATION SYSTEM
   // =============================
 
-  constructor(private cdr: ChangeDetectorRef) { }
+
 
   toastMessage = '';
   toastType: 'success' | 'info' = 'success';
@@ -815,6 +820,28 @@ export class BoardComponent {
   }
 
 
+  logout() {
+    // Clear login status
+    this.authService.signout(); // implement this in AuthService
+    this.router.navigate(['/signin']);
+  }
+
+  // BoardComponent
+  showLogoutConfirm = false;
+
+  openLogoutConfirm() {
+    this.showLogoutConfirm = true;
+  }
+
+  closeLogoutConfirm() {
+    this.showLogoutConfirm = false;
+  }
+
+  confirmLogout() {
+    this.authService.signout(); // clears login
+    this.router.navigate(['/signin']);
+    this.showLogoutConfirm = false;
+  }
 }
 
 
