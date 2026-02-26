@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Task } from '../../models/task.model';
 import { TaskComponent } from '../task/task.component';
@@ -9,16 +9,18 @@ import {
   transferArrayItem
 } from '@angular/cdk/drag-drop';
 import { Column } from '../../models/column.model';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 
 @Component({
   selector: 'app-column',
   standalone: true,
-  imports: [CommonModule, TaskComponent, DragDropModule],
+  imports: [CommonModule, TaskComponent, DragDropModule, OverlayModule],
   templateUrl: './column.component.html',
   styleUrls: ['./column.component.css']
 })
 export class ColumnComponent {
+
 
   @Input() title!: string;
   @Input() tasks: Task[] = [];
@@ -43,10 +45,10 @@ export class ColumnComponent {
   @Output() addTask = new EventEmitter<void>();
   @Output() deleteAll = new EventEmitter<void>();
   @Output() taskMoved = new EventEmitter<void>();
-  @Output() sort = new EventEmitter<'priority'|'dueDate'>();
+  @Output() sort = new EventEmitter<'priority' | 'dueDate'>();
   @Output() resetSort = new EventEmitter<void>();
 
-   @Output() deleteColumn = new EventEmitter<string>();
+  @Output() deleteColumn = new EventEmitter<string>();
 
   /* ========================= */
   /* MENU */
@@ -104,24 +106,24 @@ export class ColumnComponent {
     this.taskMoved.emit();
   }
 
-  onSort(field:'priority'|'dueDate'){
+  onSort(field: 'priority' | 'dueDate') {
     this.sort.emit(field);
   }
 
-  onResetSort(){
+  onResetSort() {
     this.resetSort.emit()
   }
-  
+
   onDeleteColumn() {
     this.deleteColumn.emit(this.columnId);
     this.toggleMenu(new MouseEvent('click')); // closes menu
   }
 
-   /* ========================= */
+  /* ========================= */
   /* HEADER COLOR UTILS */
   /* ========================= */
   getHeaderGradient(color: string): string {
-    switch(color) {
+    switch (color) {
       case 'red': return 'linear-gradient(135deg, #e74c3c, #c0392b)';
       case 'yellow': return 'linear-gradient(135deg, #f1c40f, #d4ac0d)';
       case 'green': return 'linear-gradient(135deg, #2ecc71, #27ae60)';
@@ -140,5 +142,29 @@ export class ColumnComponent {
     return darkColors.includes(color) ? '#fff' : '#000'; // simple contrast
   }
 
-  
+  //priority count dropdown
+  isPriorityDropdownOpen = false;
+
+  openPriorityDropdown() {
+    this.isPriorityDropdownOpen = true;
+  }
+
+  closePriorityDropdown() {
+    this.isPriorityDropdownOpen = false;
+  }
+
+  get highCount(): number {
+    return this.tasks.filter(task => task.priority === "High").length;
+  }
+
+  get mediumCount(): number {
+    return this.tasks.filter(task => task.priority === 'Medium').length;
+  }
+
+  get lowCount(): number {
+    return this.tasks.filter(task => task.priority === 'Low').length;
+  }
+
+
+
 }

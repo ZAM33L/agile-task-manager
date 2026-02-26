@@ -9,30 +9,55 @@
 </header>
 
 <div class="board-toolbar">
-  <!-- left side -->
-  <div class="toolbar-left">
+
+  <!-- LEFT SIDE (Desktop Only) -->
+  <div class="toolbar-left desktop-only">
     <button class="add-column-btn" (click)="openAddColumnModal()">
       Add Column
     </button>
+
     <button class="edit-column-btn" (click)="openEditColumnModal()">
       Edit Column
     </button>
   </div>
-  <!-- right side -->
+
+  <!-- RIGHT SIDE MENU -->
   <div class="toolbar-menu">
-  <button class="menu-btn" (click)="toggleToolbarMenu($event)">⋮</button>
-  @if(isToolbarMenuOpen){
-  <div class="dropdown">
-    <button (click)="openResetBoardConfirm()">
-      Reset Board
+
+    <button class="menu-btn" (click)="toggleToolbarMenu($event)">
+      ☰
     </button>
 
-    <button (click)="openLogoutConfirm()">
-      Logout
-    </button>
+    @if(isToolbarMenuOpen){
+      <div class="dropdown">
+
+        <!-- Mobile Only Actions -->
+        <div class="mobile-only">
+          <button (click)="openAddColumnModal(); closeToolbarMenu()">
+            Add Column
+          </button>
+
+          <button (click)="openEditColumnModal(); closeToolbarMenu()">
+            Edit Column
+          </button>
+
+          <hr />
+        </div>
+
+        <!-- Always Visible -->
+        <button (click)="openResetBoardConfirm(); closeToolbarMenu()">
+          Reset Board
+        </button>
+
+        <button (click)="openLogoutConfirm(); closeToolbarMenu()">
+          Signout
+        </button>
+
+      </div>
+    }
+
   </div>
-  }
-</div>
+
 </div>
 
 <div class="board-layout" cdkDropListGroup cdkScrollable>

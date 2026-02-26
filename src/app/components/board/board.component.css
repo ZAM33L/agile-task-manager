@@ -675,3 +675,35 @@ input[type="date"] {
   display: inline-block;
   line-height: 1;
 }
+
+.desktop-only {
+  display: flex;
+  gap: 12px;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  .board-toolbar {
+    justify-content: flex-end;
+  }
+
+}
+
+.toolbar-menu .dropdown hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 6px 0;
+  background-color: #e5e7eb;  /* soft grey */
+}

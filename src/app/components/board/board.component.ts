@@ -842,6 +842,11 @@ export class BoardComponent {
     this.router.navigate(['/signin']);
     this.showLogoutConfirm = false;
   }
+
+  //ham menu
+  closeToolbarMenu() {
+    this.isToolbarMenuOpen = false;
+  }
 }
 
 
