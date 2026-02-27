@@ -21,22 +21,16 @@ body {
 
 .app-header {
   height: 60px;
-  background: rgba(0, 0, 0, 0.85);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  /* aligns items to left */
-  /* allows for future buttons/logo */
   padding: 0 40px;
 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;   /* 👈 important */
+
   background: linear-gradient(135deg, #2c3e50, #34495e);
-
-
   color: white;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 
-  font-family: "Inter", sans-serif;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -706,4 +700,43 @@ input[type="date"] {
   border-top: 1px solid #eee;
   margin: 6px 0;
   background-color: #e5e7eb;  /* soft grey */
+}
+
+/* Left grouping */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Logged-in user section */
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Avatar circle */
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  color: #2c3e50;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Optional: hide name on very small screens */
+@media (max-width: 480px) {
+  .username {
+    display: none;
+  }
 }

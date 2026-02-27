@@ -36,6 +36,8 @@ export class BoardComponent {
     private boardService: BoardService
   ) { }
 
+  currentUser: any;
+
   // =============================
   // INIT
   // =============================
@@ -49,6 +51,7 @@ export class BoardComponent {
       this.router.navigate(['/signin']);
       return;
     }
+    this.currentUser = user;
     this.loadBoard();
   }
 
