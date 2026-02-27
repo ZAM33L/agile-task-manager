@@ -11,6 +11,8 @@ import { ColumnComponent } from '../column/column.component';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
 
+import { BoardService } from '../../services/board.service';
+
 
 @Component({
   selector: 'app-board',
@@ -27,7 +29,12 @@ import { AuthService } from '../../auth/services/auth.service';
 })
 export class BoardComponent {
 
-  constructor(private router: Router, private authService: AuthService, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private boardService: BoardService
+  ) { }
 
   // =============================
   // INIT
@@ -35,6 +42,13 @@ export class BoardComponent {
 
   ngOnInit() {
     console.log('BoardComponent initialized');
+    const user = this.authService.getCurrentUser();
+
+    if (!user) {
+      console.warn('No logged in user found');
+      this.router.navigate(['/signin']);
+      return;
+    }
     this.loadBoard();
   }
 
@@ -43,31 +57,33 @@ export class BoardComponent {
   // =============================
 
   saveBoard() {
-    localStorage.setItem('taskboard', JSON.stringify(this.columns))
-    console.log('Board saved to localStorage');
+    this.boardService.saveBoard(this.columns);
+    console.log('Board saved for current user');
   }
 
   loadBoard() {
-    console.log('Attempting to load board from localStorage...');
-    const savedData = localStorage.getItem('taskboard')
 
-    if (!savedData) {
-      console.log('No saved board found. Using default columns.');
+    console.log('Loading board from BoardService...');
+
+    const savedBoard = this.boardService.getBoard();
+
+    if (!savedBoard || savedBoard.length === 0) {
+      console.log('No board found for user. Using default columns.');
       return;
     }
 
-    const parsed: Column[] = JSON.parse(savedData)
-
-    //restoring date objects
-    parsed.forEach(column => {
+    // Restore date objects
+    savedBoard.forEach(column => {
       column.tasks.forEach(task => {
         if (task.dueDate) {
           task.dueDate = new Date(task.dueDate);
         }
-      })
-    })
-    this.columns = parsed
-    console.log('Board loaded successfully:', this.columns);
+      });
+    });
+
+    this.columns = savedBoard;
+
+    console.log('Board loaded successfully for current user');
   }
 
   // =============================
@@ -634,14 +650,14 @@ export class BoardComponent {
   }
 
   confirmResetBoard() {
-    console.log("resetting entire board");
 
-    localStorage.removeItem('taskboard')
-    console.log("local storage cleared")
+    console.log("Resetting board for current user");
+
+    this.boardService.clearBoard();
 
     this.showResetBoardConfirm = false;
 
-    location.reload()
+    location.reload();
   }
 
   // =============================

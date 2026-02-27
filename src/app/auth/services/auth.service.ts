@@ -27,49 +27,74 @@ export class AuthService {
 
   //signup
 
-  signup(name: string, email: string, password: string): { success: boolean; message: string } {
+  signup(
+    name: string,
+    email: string,
+    password: string,
+    officeId: string
+  ): { success: boolean; message: string } {
 
     console.log('[AuthService] Signup Attempt:', email);
 
-    const users = this.getUsers()
+    const users = this.getUsers();
 
-    //check if email already exists
+    // Check if email already exists
     const existingUser = users.find(u => u.email === email);
-    if (existingUser) { 
+    if (existingUser) {
       console.warn('[AuthService] Signup Failed - Email exists');
-      return { success: false, message: 'Email already exists!' }; 
+      return { success: false, message: 'Email already exists!' };
     }
 
-    //create new user
+    // Check if Office ID already exists
+    const existingOffice = users.find(u => u.officeId === officeId);
+    if (existingOffice) {
+      console.warn('[AuthService] Signup Failed - Office ID exists');
+      return { success: false, message: 'Office ID already exists!' };
+    }
+
+    // Create new user
     const newUser: User = {
       id: crypto.randomUUID(),
       name,
       email,
-      password
+      password,
+      officeId
     };
 
-    users.push(newUser)
-    this.saveUsers(users)
+    users.push(newUser);
+    this.saveUsers(users);
+
     console.log('[AuthService] Signup Successful:', newUser);
+
     return { success: true, message: 'Signup successful!' };
   }
 
   //signin
 
-  signin(email: string, password: string): { success: boolean; message: string } {
-    
-    console.log('[AuthService] Signin Attempt:', email);
+  signin(
+    identifier: string,
+    password: string
+  ): { success: boolean; message: string } {
 
-    const users = this.getUsers()
+    console.log('[AuthService] Signin Attempt:', identifier);
 
-    const user = users.find(u => u.email === email && u.password === password);
+    const users = this.getUsers();
+
+    // Normalize identifier (trim spaces)
+    identifier = identifier.trim();
+
+    const user = users.find(u =>
+      (u.email === identifier || u.officeId === identifier) &&
+      u.password === password
+    );
 
     if (!user) {
       console.warn('[AuthService] Signin Failed - Invalid credentials');
-      return { success: false, message: 'Invalid email or password!' };
+      return { success: false, message: 'Invalid Office ID / Email or Password!' };
     }
 
     localStorage.setItem(this.currentUserKey, JSON.stringify(user));
+
     console.log('[AuthService] Signin Successful:', user);
 
     return { success: true, message: 'Login successful!' };

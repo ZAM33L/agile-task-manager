@@ -75,3 +75,34 @@
 .toast.error   { background-color: #f44336; color: #fff; }
 .toast.info    { background-color: #2196f3; color: #fff; }
 .toast.warning { background-color: #ff9800; color: #fff; }
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 12px 45px 12px 12px; /* space for eye icon */
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.eye-icon {
+  line-height: 6;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
+  font-size: 20px;
+  user-select: none;
+}
+
+.eye-icon:hover {
+  color: #667eea;
+}
