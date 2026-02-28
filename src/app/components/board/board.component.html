@@ -514,7 +514,7 @@
       (click)="toggleEditColumnPosition()">
 
       Move to:
-      @if (editColumnPosition === columns.length - 1) {
+      @if (editColumnPosition === columns.length) {
       End
       } @else {
       Before "{{ columns[editColumnPosition]?.title }}"
@@ -533,7 +533,7 @@
         </div>
         }
 
-        <div class="option" (click)="editColumnPosition = columns.length - 1; closeEditColumnPosition()">
+        <div class="option" (click)="editColumnPosition = columns.length; closeEditColumnPosition()">
           At End
         </div>
 

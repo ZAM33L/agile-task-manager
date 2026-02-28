@@ -751,37 +751,41 @@ export class BoardComponent {
   // UPDATE COLUMN
   // =============================
 
-  updateColumn() {
-    this.attemptedColumnEditSubmit = true;
+updateColumn() {
+  this.attemptedColumnEditSubmit = true;
 
-    if (!this.editColumnId) return;
+  if (!this.editColumnId) return;
 
-    if (!this.editColumnTitle.trim()) {
-      this.showNotification('Column title cannot be empty', 'info');
-      return;
-    }
-
-    const index = this.columns.findIndex(col => col.id === this.editColumnId);
-    if (index === -1) return;
-
-    const updatedColumn: Column = {
-      ...this.columns[index],
-      title: this.editColumnTitle.trim(),
-      color: this.editColumnColor
-    };
-
-    // Remove old position
-    this.columns.splice(index, 1);
-
-    // Insert at new position
-    this.columns.splice(this.editColumnPosition, 0, updatedColumn);
-
-    console.log(`Column updated: ${updatedColumn.title}`);
-
-    this.saveBoard();
-    this.closeEditColumnModal();
-    this.showNotification(`Column "${updatedColumn.title}" updated`, 'info');
+  if (!this.editColumnTitle.trim()) {
+    this.showNotification('Column title cannot be empty', 'info');
+    return;
   }
+
+  const index = this.columns.findIndex(col => col.id === this.editColumnId);
+  if (index === -1) return;
+
+  const updatedColumn: Column = {
+    ...this.columns[index],
+    title: this.editColumnTitle.trim(),
+    color: this.editColumnColor
+  };
+
+  // Remove old column
+  this.columns.splice(index, 1);
+
+  let newPosition = this.editColumnPosition;
+
+  // 🔥 IMPORTANT FIX
+  if (index < this.editColumnPosition) {
+    newPosition--;
+  }
+
+  this.columns.splice(newPosition, 0, updatedColumn);
+
+  this.saveBoard();
+  this.closeEditColumnModal();
+  this.showNotification(`Column "${updatedColumn.title}" updated`, 'info');
+}
 
 
   // =============================
